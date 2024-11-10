@@ -209,7 +209,7 @@ export const columns: ColumnDef<Payment>[] = [
     },
 ]
 
-export function CustomerDataTabke() {
+export function _CustomerDataTable() {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []
