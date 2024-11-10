@@ -9,9 +9,10 @@ type Props = {
     labelName: string;
     placeholder?: string;
     type?: string;
+    disabled?: string;
 };
 export default function _ZodInput(props: Props) {
-    const {control, name, labelName, placeholder, type} = props;
+    const {control, name, labelName, placeholder, type, disabled} = props;
     return (
         <>
             <FormField
@@ -21,7 +22,7 @@ export default function _ZodInput(props: Props) {
                     <FormItem>
                         <FormLabel>{labelName}</FormLabel>
                         <FormControl>
-                            <Input placeholder={placeholder} type={type ? type : "text"} {...field} />
+                            <Input placeholder={placeholder} type={type ? type : "text"} disabled={disabled} {...field} />
                         </FormControl>
                         <FormMessage/>
                     </FormItem>

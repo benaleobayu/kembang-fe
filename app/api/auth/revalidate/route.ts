@@ -3,7 +3,7 @@ import { NextResponse, NextRequest } from "next/server";
 export async function GET(req: NextRequest) {
     const cookieName: any = 'accessToken';
     const cookie = req.cookies.get(cookieName);
-    const token = cookie ? cookie.value : null; // Get the token value
+    const token = cookie ? cookie.value : null; // Get the token disabled
 
     const apiUrl = `${process.env.AUTH_URL}/auth/revalidate-token?token=${token}`;
 

@@ -72,7 +72,10 @@ export default function CustomerForm() {
                 <_ZodBooleanSelectActive control={form.control} name={"isActive"} labelName={"Active Status"}/>
 
                 {/* Submit Button */}
-                <Button type="submit">Submit</Button>
+                <div className="flex justify-between items-center">
+                    <Button type="back" variant="outline">Back</Button>
+                    <Button type="submit">Submit</Button>
+                </div>
             </form>
         </Form>
     );
