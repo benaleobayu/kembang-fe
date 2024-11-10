@@ -1,9 +1,8 @@
 import {NextResponse, NextRequest} from "next/server";
+import {getAuthToken} from "@/utils/intercept-token";
 
 export async function GET(req: NextRequest){
-    const cookieName: any = 'accessToken';
-    const cookie = req.cookies.get(cookieName);
-    const token = cookie ? cookie.value : null;
+    const token = getAuthToken(req)
 
     const deviceId = req.headers.get('deviceId') as string | "undefined";
     const version = '1.0.0'
