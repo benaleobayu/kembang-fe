@@ -3,10 +3,29 @@ import {LocationIndex} from "@/types/locationIndex";
 import {Checkbox} from "@/components/ui/checkbox";
 import _ColumnInput from "@/components/apps/globals/elements/data-table/column-input";
 import ActionCell from "@/components/ActionCell";
+import {toast} from "sonner";
+import axios from "axios";
+import {routesUrl} from "@/components/apps/globals/options/routes";
+
+// Define URL for API calls
+const urlRoute = routesUrl.find(data => data.key === "location")?.url;
+const apiRoute = routesUrl.find(data => data.key === "locationApi")?.url;
+
+const handleDelete = async (id: string) => {
+
+    try {
+        const response = await axios.delete(`${apiRoute}/${id}`);
+        if (response.status === 200) {
+            toast.success("Data berhasil dihapus");
+        }
+    } catch (error) {
+        toast.error("Gagal menghapus data");
+    }
+};
 
 export const LocationColumnTable: ColumnDef<LocationIndex>[] = [
     {
-        id: "select", // Unique ID for the select column
+        id: "select",
         header: ({table}) => (
             <Checkbox
                 checked={
@@ -33,12 +52,20 @@ export const LocationColumnTable: ColumnDef<LocationIndex>[] = [
     _ColumnInput({key: "orders", name: "Orders"}),
     _ColumnInput({key: "createdAt", name: "Created At"}),
     {
-        id: "actions", // Unique ID for the actions column
+        id: "actions",
         enableHiding: false,
-        cell: ({row}) => {
-            const data = row.original; // Get the row data, which contains the 'id' property
-
-            return <ActionCell id={data.id} />;
+        cell: ({row, table}) => {
+            const data = row.original;
+            return (
+                <ActionCell
+                    id={data.id}
+                    isDeleted={true}  // Change to true if you want to show deleted state
+                    handleDelete={() => {
+                        // Call the delete handler
+                        handleDelete(data.id);
+                    }}
+                />
+            );
         },
     },
 ];

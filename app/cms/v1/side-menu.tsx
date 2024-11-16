@@ -53,7 +53,6 @@ export function SideMenu() {
 
         fetchMenus(); // Call the async function
     }, []); // Empty dependency array to run once on mount
-    console.log(menus)
 
     return (
         <Command className="rounded-lg border shadow-md w-full min-h-screen">

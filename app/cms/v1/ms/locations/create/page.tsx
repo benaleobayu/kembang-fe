@@ -1,13 +1,13 @@
 // @flow
 import * as React from 'react';
-import FromLocationCreate from "@/app/cms/v1/ms/locations/create/form-location-create";
+import FormLocation from "@/app/cms/v1/ms/locations/form-location";
 
 type Props = {};
 export default function Page(props: Props) {
     return (
         <div>
             Create Location
-            <FromLocationCreate/>
+            <FormLocation formType="create"/>
         </div>
     );
 };

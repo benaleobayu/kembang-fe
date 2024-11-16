@@ -15,7 +15,7 @@ const Command = React.forwardRef<
   <CommandPrimitive
     ref={ref}
     className={cn(
-      "flex min-h-screen w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground",
+      "flex w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground",
       className
     )}
     {...props}
@@ -62,7 +62,7 @@ const CommandList = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <CommandPrimitive.List
     ref={ref}
-    className={cn("min-h-screen overflow-y-auto overflow-x-hidden", className)}
+    className={cn("h-[500px] overflow-y-auto overflow-x-hidden", className)}
     {...props}
   />
 ))
