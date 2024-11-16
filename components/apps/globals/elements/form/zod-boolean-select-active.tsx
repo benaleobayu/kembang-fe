@@ -30,10 +30,13 @@ export default function _ZodBooleanSelectActive(props: Props) {
                     ) : (
                         <>
                             <FormLabel>{labelName}</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value ? "true" : "false"}>
+                            <Select
+                                onValueChange={(value) => field.onChange(value === "true")}
+                                defaultValue={field.value ? "true" : "false"}
+                            >
                                 <FormControl>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select a verified email to display"/>
+                                        <SelectValue placeholder="Select active status" />
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
@@ -42,14 +45,13 @@ export default function _ZodBooleanSelectActive(props: Props) {
                                 </SelectContent>
                             </Select>
                         </>
+                    )}
+                    <FormDescription>
+                        {description}
+                    </FormDescription>
+                    <FormMessage/>
+                </FormItem>
             )}
-        <FormDescription>
-            {description}
-        </FormDescription>
-        <FormMessage/>
-</FormItem>
-)}
-/>
-)
-    ;
+        />
+    );
 };

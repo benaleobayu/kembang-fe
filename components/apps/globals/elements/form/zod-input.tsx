@@ -14,20 +14,27 @@ type Props = {
 export default function _ZodInput(props: Props) {
     const {control, name, labelName, placeholder, type, disabled} = props;
     return (
-        <>
-            <FormField
-                control={control}
-                name={name}
-                render={({field}) => (
-                    <FormItem>
-                        <FormLabel>{labelName}</FormLabel>
-                        <FormControl>
-                            <Input placeholder={placeholder} type={type ? type : "text"} disabled={disabled} {...field} />
-                        </FormControl>
-                        <FormMessage/>
-                    </FormItem>
-                )}
-            />
-        </>
+        <FormField
+            control={control}
+            name={name}
+            render={({field}) => (
+                <FormItem>
+                    <FormLabel>{labelName}</FormLabel>
+                    <FormControl>
+                        <Input
+                            placeholder={placeholder}
+                            type={type || "text"}
+                            disabled={!!disabled}
+                            {...field}
+                            onChange={(e) => {
+                                const value = type === "number" ? parseFloat(e.target.value) || 0 : e.target.value;
+                                field.onChange(value);
+                            }}
+                        />
+                    </FormControl>
+                    <FormMessage/>
+                </FormItem>
+            )}
+        />
     );
 };
