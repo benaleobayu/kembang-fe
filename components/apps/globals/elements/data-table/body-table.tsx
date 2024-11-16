@@ -10,10 +10,10 @@ import {
 import {Button} from "@/components/ui/button";
 import {ChevronDown} from "lucide-react";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
-import {flexRender} from "@tanstack/react-table";
-import {LocationColumnTable} from "@/app/cms/v1/ms/locations/location-column-table";
+import {ColumnDef, flexRender} from "@tanstack/react-table";
 
 type Props = {
+    columnTable:  ColumnDef<any>[],
     table: any,
     keyword: string,
     setKeyword: (value: string) => void,
@@ -25,7 +25,7 @@ type Props = {
     setPagination: (value: any) => void
 };
 export default function _BodyTable(props: Props) {
-    const { table, keyword , setKeyword, pagination, setPagination} = props;
+    const { columnTable, table, keyword , setKeyword, pagination, setPagination} = props;
 
     const canNextPage = pagination.currentPage < Math.ceil(pagination.totalItems / pagination.perPage) - 1;
 
@@ -95,7 +95,7 @@ export default function _BodyTable(props: Props) {
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={LocationColumnTable.length} className="h-24 text-center">
+                                <TableCell colSpan={columnTable.length} className="h-24 text-center" inert>
                                     No results.
                                 </TableCell>
                             </TableRow>
