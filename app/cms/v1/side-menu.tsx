@@ -57,7 +57,7 @@ export function SideMenu() {
     return (
         <Command className="rounded-lg border shadow-md w-full min-h-screen">
             <CommandInput placeholder="Type a command or search..." />
-            <CommandList>
+            <CommandList className="max-h-[100vh-200px]">
                 <CommandEmpty>No results found.</CommandEmpty>
                 <CommandSeparator />
                 {menus.length > 0 && menus.map((group) => (

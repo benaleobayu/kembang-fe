@@ -1,18 +1,17 @@
 "use client";
 import * as React from "react";
-import { ColumnFiltersState, VisibilityState } from "@tanstack/react-table";
-import _BodyTable from "@/components/apps/globals/elements/data-table/body-table";
-import { useInitiateDataTable } from "@/hooks/use-initiate-data-table";
-import { useInitiateReactTable } from "@/hooks/use-initiate-react-table";
-import { LocationColumnTable } from "@/app/cms/v1/ms/locations/location-column-table";
-import {LocationIndex} from "@/types/locationIndex";
-import {routesUrl} from "@/components/apps/globals/options/routes";
 import {useState} from "react";
+import {ColumnDef, ColumnFiltersState, VisibilityState} from "@tanstack/react-table";
+import _BodyTable from "@/components/apps/globals/elements/data-table/body-table";
+import {useInitiateDataTable} from "@/hooks/use-initiate-data-table";
+import {useInitiateReactTable} from "@/hooks/use-initiate-react-table";
 
+type Props = {
+    apiRoute: string,
+    columnTable: ColumnDef<any>[]
+}
 
-const apiRoute = routesUrl.find(data => data.key === "locationApi")?.url;
-
-export function _LocationDataTable() {
+export function _ReactDataTable({apiRoute, columnTable}: Props) {
     const {
         data,
         setData,
@@ -46,7 +45,7 @@ export function _LocationDataTable() {
         meta: {
             revalidateData,
             removeRow: (rowId: string) => {
-                const updatedData = data.filter((item: LocationIndex) => item.id !== rowId);
+                const updatedData = data.filter((item: any) => item.id !== rowId);
                 setData(updatedData);
                 setOriginalData(updatedData);
                 setPagination((prev) => ({
@@ -55,6 +54,7 @@ export function _LocationDataTable() {
                 }));
             },
         },
+        columnTable
     });
 
     return (
@@ -64,7 +64,7 @@ export function _LocationDataTable() {
             setKeyword={setKeyword}
             pagination={pagination}
             setPagination={setPagination}
-            columnTable={LocationColumnTable}
+            columnTable={columnTable}
         />
     );
 }

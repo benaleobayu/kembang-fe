@@ -10,4 +10,8 @@ export const routesUrl: Array<{ key: string, url: string }> = [
 
     {key: "location", url: cmsUrl + "/ms/locations"},
     {key: "locationApi", url: apiUrl + "/ms/locations"},
+
+    {key: "customer", url: cmsUrl + "/customers"},
+    {key: "customerApi", url: apiUrl + "/customers"},
+
 ]

@@ -17,7 +17,7 @@ interface FetchDataParams {
 }
 
 export function useInitiateDataTable(
-    url: string,                   // Accept the API URL as a parameter
+    url: string,
     initialSortBy: string = "updatedAt",
     initialDirection: string = "desc"
 ) {
@@ -35,7 +35,7 @@ export function useInitiateDataTable(
 
     const fetchData = async ({ sortBy, direction, keyword, pagination }: FetchDataParams) => {
         try {
-            const response = await axios.get(url, {    // Use the dynamic `url` here
+            const response = await axios.get(url, {
                 params: {
                     pages: pagination.currentPage,
                     limit: pagination.perPage,
@@ -59,10 +59,19 @@ export function useInitiateDataTable(
         }
     };
 
+    // Callback untuk menghapus data secara lokal
+    const revalidateData = (idToRemove: string) => {
+        setData((prevData) => prevData.filter((item: any) => item.id !== idToRemove));
+        setPagination((prev) => ({
+            ...prev,
+            totalItems: prev.totalItems - 1, // Update total items
+        }));
+    };
+
     // Debounce keyword search
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
-            setPagination((prev) => ({ ...prev, currentPage: 0 })); // Reset to first page on new search
+            setPagination((prev) => ({ ...prev, currentPage: 0 }));
             fetchData({ sortBy, direction, keyword, pagination });
         }, 1000);
 
@@ -76,11 +85,15 @@ export function useInitiateDataTable(
 
     return {
         data,
+        setData,
         pagination,
         setPagination,
         sorting,
         setSorting,
         keyword,
         setKeyword,
+        fetchData,
+        revalidateData, // Return this function for use in components
+        removeRow: revalidateData, // Tambahkan removeRow ke dalam meta
     };
 }

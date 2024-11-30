@@ -13,9 +13,10 @@ type Props = {
         value: string;
         label: string
     }[]
+    disabled?: boolean;
 };
 export default function _ZodStringCheckbox(props: Props) {
-    const {control, name, labelName, placeholder, description, datas} = props;
+    const {control, name, labelName, placeholder, description, datas, disabled} = props;
     return (
         <FormItem>
             <div className="mb-4">
@@ -37,6 +38,7 @@ export default function _ZodStringCheckbox(props: Props) {
                             >
                                 <FormControl>
                                     <Checkbox
+                                        disabled={disabled}
                                         checked={field.value?.includes(item.value)}
                                         onCheckedChange={(checked) => {
                                             return checked

@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import {ColumnDef} from "@tanstack/react-table";
 import {LocationIndex} from "@/types/locationIndex";
@@ -10,26 +10,27 @@ import axios from "axios";
 import {toast} from "sonner";
 
 // Define URL for API calls
-const urlRoute = routesUrl.find(data => data.key === "location")?.url;
-const apiRoute = routesUrl.find(data => data.key === "locationApi")?.url;
+const urlRoute = routesUrl.find(data => data.key === "customer")?.url;
+const apiRoute = routesUrl.find(data => data.key === "customerApi")?.url;
+const mainName = "Customer";
 
 const removeRow = async (meta: any, index: number) => {
     const route = `${apiRoute}/${index}`
     const response = await axios.delete(route)
     if (response.data.success){
         if (meta && typeof meta.removeRow === "function") {
-            toast.success("Location deleted successfully!");
+            toast.success(`${mainName} deleted successfully!`);
             meta.removeRow(index); // Menghapus berdasarkan ID
         } else {
             toast.error("Failed to remove row table.");
             console.error("removeRow function is not available or meta is undefined");
         }
     }else {
-        toast.error("Failed to delete location.");
+        toast.error(`Failed to delete ${mainName.toLowerCase()}.`);
     }
 }
 
-export const LocationColumnTable: ColumnDef<LocationIndex>[] = [
+export const CustomerColumnTable: ColumnDef<LocationIndex>[] = [
     {
         id: "select",
         header: ({table}) => (
@@ -54,8 +55,10 @@ export const LocationColumnTable: ColumnDef<LocationIndex>[] = [
     },
     _ColumnInput({key: "index", name: "ID"}),
     _ColumnInput({key: "name", name: "Name"}),
-    _ColumnInput({key: "province", name: "Province"}),
-    _ColumnInput({key: "orders", name: "Orders"}),
+    _ColumnInput({key: "phone", name: "Phone"}),
+    _ColumnInput({key: "address", name: "Address"}),
+    _ColumnInput({key: "location", name: "Location"}),
+    _ColumnInput({key: "isSubscribed", name: "Subscribed"}),
     _ColumnInput({key: "createdAt", name: "Created At"}),
     {
         id: "actions",

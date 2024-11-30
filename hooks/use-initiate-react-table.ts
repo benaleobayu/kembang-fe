@@ -1,9 +1,7 @@
-import { useReactTable, getCoreRowModel, getPaginationRowModel, getSortedRowModel, getFilteredRowModel } from "@tanstack/react-table";
-import { LocationColumnTable } from "@/app/cms/v1/ms/locations/location-column-table";
-import { ColumnFiltersState, SortingState, VisibilityState } from "@tanstack/react-table";
-import { Dispatch, SetStateAction } from "react";
+import {ColumnFiltersState, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, SortingState, useReactTable, VisibilityState} from "@tanstack/react-table";
+import {Dispatch, SetStateAction} from "react";
 
-type UseLocationTableProps = {
+type UseDataTableProps = {
     data: any[];
     pagination: { currentPage: number; perPage: number; totalItems: number };
     setPagination: Dispatch<SetStateAction<{ currentPage: number; perPage: number; totalItems: number }>>;
@@ -18,21 +16,23 @@ type UseLocationTableProps = {
 };
 
 export function useInitiateReactTable({
-                                     data,
-                                     pagination,
-                                     setPagination,
-                                     sorting,
-                                     setSorting,
-                                     columnFilters,
-                                     setColumnFilters,
-                                     columnVisibility,
-                                     setColumnVisibility,
-                                     rowSelection,
-                                     setRowSelection,
-                                 }: UseLocationTableProps) {
+                                          data,
+                                          pagination,
+                                          setPagination,
+                                          sorting,
+                                          setSorting,
+                                          columnFilters,
+                                          setColumnFilters,
+                                          columnVisibility,
+                                          setColumnVisibility,
+                                          rowSelection,
+                                          setRowSelection,
+                                          meta,
+                                          columnTable// Tambahkan meta ke dalam props
+                                      }: UseDataTableProps & { meta: any } & { columnTable: any }) {
     return useReactTable({
         data,
-        columns: LocationColumnTable,
+        columns: columnTable,
         state: {
             sorting,
             columnFilters,
@@ -45,7 +45,7 @@ export function useInitiateReactTable({
         },
         manualPagination: true,
         pageCount: Math.ceil(pagination.totalItems / pagination.perPage),
-        onPaginationChange: ({ pageIndex, pageSize }) => {
+        onPaginationChange: ({pageIndex, pageSize}) => {
             setPagination((prev) => ({
                 ...prev,
                 currentPage: pageIndex,
@@ -60,5 +60,6 @@ export function useInitiateReactTable({
         getFilteredRowModel: getFilteredRowModel(),
         onColumnVisibilityChange: setColumnVisibility,
         onRowSelectionChange: setRowSelection,
+        meta, // Pastikan meta diteruskan
     });
 }

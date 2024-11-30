@@ -8,9 +8,12 @@ type Props = {
     name: string;
     labelName: string;
     placeholder?: string;
+    disabled?: boolean;
 };
+
+
 export default function _ZodBoolean(props: Props) {
-    const {control, name, labelName, placeholder} = props;
+    const {control, name, labelName, placeholder, disabled} = props;
     return (
         <FormField
             control={control}
@@ -19,7 +22,7 @@ export default function _ZodBoolean(props: Props) {
                 <FormItem className="space-y-0 flex items-center">
                     <FormLabel className="me-2">{labelName}</FormLabel>
                     <FormControl className="space-y-0">
-                        <Checkbox {...field} />
+                        <Checkbox disabled={disabled} {...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>

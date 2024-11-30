@@ -74,4 +74,14 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+
+
+
 }
+
+/* Memilih semua elemen dengan ID yang mengandung "radix-:r" */
+[id*="radix-\:r"] {
+  width: var(--radix-popper-anchor-width);
+}
+
+

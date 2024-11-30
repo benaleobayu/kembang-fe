@@ -61,9 +61,9 @@ export default function _ZodSelect(props: Props) {
                                 <PopoverContent className="w-full p-0">
                                     <Command>
                                         <CommandInput placeholder={placeholder ? placeholder : `Select ${labelName}`}/>
-                                        <CommandList>
+                                        <CommandList className="max-h-[200px]">
                                             <CommandEmpty>No data ${labelName} found.</CommandEmpty>
-                                            <CommandGroup>
+                                            <CommandGroup className={"w-full"}>
                                                 {datas.map((data) => (
                                                     <CommandItem
                                                         value={data.label}
