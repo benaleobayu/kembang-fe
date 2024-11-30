@@ -13,7 +13,7 @@ export async function GET(request) {
         const keyword = url.searchParams.get('keyword') || '';
 
         // Construct the API URL with dynamic query parameters
-        const apiUrl = `${process.env.API_URL}/ms/location?pages=${pages}&limit=${limit}&sortBy=${sortBy}&direction=${direction}&keyword=${keyword}`;
+        const apiUrl = `${process.env.API_URL}/ms/product?pages=${pages}&limit=${limit}&sortBy=${sortBy}&direction=${direction}&keyword=${keyword}`;
 
         const response = await fetch(apiUrl, {
             method: 'GET',

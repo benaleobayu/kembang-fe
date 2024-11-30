@@ -1,6 +1,6 @@
 // @flow
 import * as React from 'react';
-import FormLocation from "@/app/cms/v1/ms/locations/form-location";
+import LocationForm from "@/app/cms/v1/ms/locations/location-form";
 import CustomerForm from "@/app/cms/v1/customers/customer-form";
 
 type Props = {};

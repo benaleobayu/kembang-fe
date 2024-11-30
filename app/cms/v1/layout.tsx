@@ -8,7 +8,7 @@ export default function __Layout({children}: any) {
         <>
             <__Navbar/>
             <div className="flex mt-[60px] min-h-screen">
-                <div className="w-[300px] px-4 py-6 border-r-2 min-h-screen">
+                <div className="w-[300px] pl-4 pr-2 py-6 border-r-2">
                     <SideMenu/>
                 </div>
                 <div className="w-full py-6 px-4">

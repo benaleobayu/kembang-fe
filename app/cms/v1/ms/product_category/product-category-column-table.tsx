@@ -10,8 +10,8 @@ import axios from "axios";
 import {toast} from "sonner";
 
 // Define URL for API calls
-const urlRoute = routesUrl.find(data => data.key === "location")?.url;
-const apiRoute = routesUrl.find(data => data.key === "locationApi")?.url;
+const urlRoute = routesUrl.find(data => data.key === "productCategory")?.url;
+const apiRoute = routesUrl.find(data => data.key === "productCategoryApi")?.url;
 
 const removeRow = async (meta: any, index: number) => {
     const route = `${apiRoute}/${index}`
@@ -29,7 +29,7 @@ const removeRow = async (meta: any, index: number) => {
     }
 }
 
-export const LocationColumnTable: ColumnDef<LocationIndex>[] = [
+export const ProductCategoryColumnTable: ColumnDef<LocationIndex>[] = [
     {
         id: "select",
         header: ({table}) => (
@@ -54,9 +54,8 @@ export const LocationColumnTable: ColumnDef<LocationIndex>[] = [
     },
     _ColumnInput({key: "index", name: "ID"}),
     _ColumnInput({key: "name", name: "Name"}),
-    _ColumnInput({key: "province", name: "Province"}),
-    _ColumnInput({key: "orders", name: "Orders"}),
     _ColumnInput({key: "createdAt", name: "Created At"}),
+    _ColumnInput({key: "updatedAt", name: "Updated At"}),
     {
         id: "actions",
         enableHiding: false,

@@ -14,36 +14,21 @@ import * as React from "react";
 import {useEffect, useState} from "react";
 import _ZodBooleanSelectActive from "@/components/apps/globals/elements/form/zod-boolean-select-active";
 import {routesUrl} from "@/components/apps/globals/options/routes";
-import _ZodBoolean from "@/components/apps/globals/elements/form/zod-boolean";
-import {daysOptions} from "@/components/apps/globals/options/days";
-import {locationOptions} from "@/components/apps/globals/options/location";
-import _ZodStringCheckbox from "@/components/apps/globals/elements/form/zod-string-checkbox";
-
-interface LocationOptions {
-    label: string,
-    value: string
-}
+import _ZodInputArea from "@/components/apps/globals/elements/form/zod-input-area";
+import _ZodInputImage from "@/components/apps/globals/elements/form/zod-input-image";
+import {SelectOptions} from "@/types/SelectOptions";
 
 // Zod validation schema
 const FormSchema = z.object({
+    file: z.instanceof(File).nullable().optional(),
     name: z.string().min(3, {
         message: "Name must be at least 3 characters.",
     }),
-    phone: z.string().min(8, {
-        message: "Phone number must be at least 8 characters.",
-    }).regex(/^\d+$/, {
-        message: "Phone number must contain only digits.",
+    description: z.string().nullable(),
+    categoryId: z.string().min(1, {
+        message: "Category is required.",
     }),
-    address: z.string().min(1, {
-        message: "Address is required.",
-    }),
-    location: z.string().min(1, {
-        message: "Location is required.",
-    }),
-    daySubscribed: z.array(z.string()).refine((value) => value.some((item) => item), {
-        message: "You have to select at least one item.",
-    }),
-    isSubscribed: z.boolean(),
+    price: z.number().nullable(),
     isActive: z.boolean(),
 });
 
@@ -52,21 +37,19 @@ type FormType = {
     edit?: boolean;
 };
 
-const apiRoute = routesUrl.find(data => data.key === "customerApi")?.url;
-const urlRoute = routesUrl.find(data => data.key === "customer")?.url;
-const mainName = "Customer";
+const apiRoute = routesUrl.find(data => data.key === "productApi")?.url;
+const urlRoute = routesUrl.find(data => data.key === "product")?.url;
+const mainName = "Product";
 
-
-export default function CustomerForm({formType = "create", id}: FormType) {
+export default function ProductForm({formType = "create", id}: FormType) {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [isEditable, setIsEditable] = useState(formType === "create");
-    const [locations, setLocations] = useState<LocationOptions>([]);
+    const [categories, setCategories] = useState<SelectOptions>([]);
+    const [currentImage, setCurrentImage] = useState<string | null>(null);
 
     const router = useRouter();
-    const days = daysOptions;
-
     const url = new URL(window.location.href);
     const editParam = url.searchParams.get("edit") === "true";
 
@@ -76,12 +59,11 @@ export default function CustomerForm({formType = "create", id}: FormType) {
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
+            file: null,
             name: "",
-            phone: "",
-            address: "",
-            location: "", // Assuming a default locations is set
-            daySubscribed: ["nothing"],
-            isSubscribed: false,
+            description: "",
+            categoryId: "",
+            price: 0,
             isActive: true,
         },
     });
@@ -98,6 +80,7 @@ export default function CustomerForm({formType = "create", id}: FormType) {
                 try {
                     const response = await axios.get(`${apiRoute}/${id || idFromPath}`);
                     setData(response.data.data);
+                    console.log(`${apiRoute}/${id || idFromPath}`)
                 } catch (e) {
                     console.error("Error Response:", e.response);
                     toast.error(`Failed to fetch ${mainName.toLowerCase()} data.`);
@@ -111,55 +94,50 @@ export default function CustomerForm({formType = "create", id}: FormType) {
     }, [formType, id, isReadOrUpdate]);
 
     useEffect(() => {
-        if (isCreateOrUpdate) {
-            const fetchLocations = async () => {
-                const apiRouteLocation = routesUrl.find(data => data.key === "locationApi")?.url;
-                setLoading(true);
-                setError(null);
-                try {
-                    const response = await axios.get(`${apiRouteLocation}?limit=1000`);
-                    const locationData = response.data.data.result;
+        const fetchCategories = async () => {
+            const apiRouteCategory = routesUrl.find(data => data.key === "productCategoryApi")?.url;
+            setLoading(true);
+            setError(null);
+            try {
+                const response = await axios.get(`${apiRouteCategory}?limit=1000`);
+                const mapResponse = response.data.data.result;
 
-                    // Map to LocationOptions interface
-                    const locationOptions: LocationOptions[] = locationData.map((data: any) => ({
-                        label: data.name,
-                        value: data.name,
-                    }));
+                // Map to LocationOptions interface
+                const dataOptions: SelectOptions[] = mapResponse.map((data: any) => ({
+                    label: data.name,
+                    value: data.id,
+                }));
 
-                    setLocations(locationOptions);
+                setCategories(dataOptions);
 
-                } catch (e) {
-                    console.error("Error Response:", e.response);
-                    toast.error(`Failed to fetch location data.`);
-                    setError(e.response?.data?.message || "An error occurred");
-                } finally {
-                    setLoading(false);
-                }
+            } catch (e) {
+                console.error("Error Response:", e.response);
+                toast.error(`Failed to fetch category data.`);
+                setError(e.response?.data?.message || "An error occurred");
+            } finally {
+                setLoading(false);
+            }
 
-            };
+        };
 
-            fetchLocations();
-        }
-    }, [isCreateOrUpdate]);
-
-
+        fetchCategories();
+    }, []);
 
     // Update form default values when `data` changes
     useEffect(() => {
         if (data && isReadOrUpdate) {
-            const isSubscribed = data.isSubscribed === "true" || data.isSubscribed === true;
-            const isActive = data.isActive === "true" || data.isActive === true;
             reset({
+                file: null,
                 name: data.name || "",
-                phone: data.phone || "",
-                address: data.address || "",
-                daySubscribed: data.daySubscribed || [],
-                location: data.locationName || "",
-                isSubscribed: isSubscribed,
-                isActive: isActive,
+                description: data.description || "",
+                categoryId: data.category || "",
+                price: data.price || "",
+                isActive: data.isActive || true,
             });
+            setCurrentImage(data.image)
         }
     }, [data, isReadOrUpdate, reset]);
+
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error}</p>;
@@ -167,10 +145,25 @@ export default function CustomerForm({formType = "create", id}: FormType) {
     // Submit handler
     async function onSubmit(formData: z.infer<typeof FormSchema>) {
         try {
+            const formDataToSend = new FormData();
+            formDataToSend.append("name", formData.name);
+            formDataToSend.append("description", formData.description);
+            formDataToSend.append("categoryId", formData.categoryId);
+            formDataToSend.append("price", formData.price?.toString());
+            formDataToSend.append("isActive", formData.isActive.toString());
+
+            // Pastikan hanya menambahkan file jika ada
+            if (formData.file && formData.file instanceof File) {
+                formDataToSend.append("file", formData.file);
+            }
+
             if (formType === "create") {
-                const response = await axios.post(`${apiRoute}/create`, formData);
-                console.log(response)
-                if (response.data.success) {
+                const response = await fetch(`${apiRoute}/create`, {
+                    method: 'POST',
+                    body: formDataToSend,
+                });
+
+                if (response.status === 200) {
                     toast.success(`${mainName} created successfully!`);
                     router.push(urlRoute);
                 } else {
@@ -178,7 +171,7 @@ export default function CustomerForm({formType = "create", id}: FormType) {
                 }
             } else if (isReadOrUpdate) {
                 const idFromPath = window.location.pathname.split("/").at(-1);
-                const response = await axios.put(`${apiRoute}/${id || idFromPath}`, formData);
+                const response = await axios.put(`${apiRoute}/${id || idFromPath}`, formDataToSend);
                 if (response.data.success) {
                     toast.success(`${mainName} updated successfully!`);
                     router.push(urlRoute);
@@ -188,12 +181,11 @@ export default function CustomerForm({formType = "create", id}: FormType) {
             }
         } catch (error) {
             console.error("Error Response:", error.response);
-            toast.error(error.response?.data?.message || `Failed to save ${mainName.toLowerCase()}.`);
+            toast.error(error.response?.data?.message || "Failed to save location.");
         }
     }
 
     const handleBack = () => {
-
         if (urlRoute) {
             router.push(urlRoute);
         } else {
@@ -208,22 +200,19 @@ export default function CustomerForm({formType = "create", id}: FormType) {
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4">
                 {/* Name Field */}
-                <_ZodInput control={form.control} name={"name"} labelName={"Name"} placeholder={"input your name"} disabled={disabled}/>
+                <_ZodInput control={form.control} name="name" labelName="Name" placeholder="Input name" disabled={disabled}/>
 
-                {/* Phone Field */}
-                <_ZodInput control={form.control} name={"phone"} labelName={"Phone"} placeholder={"input your phone"} disabled={disabled}/>
+                {/* Price Field */}
+                <_ZodInput control={form.control} name="price" type="number" labelName="Price" placeholder="Input price" disabled={disabled}/>
 
-                {/* Address Field */}
-                <_ZodInput control={form.control} name={"address"} labelName={"Address"} placeholder={"input your address"} disabled={disabled}/>
+                {/* Category Field */}
+                <_ZodSelect control={form.control} name={"categoryId"} labelName={"Category"} placeholder={"Select Category"} datas={categories} form={form} disabled={disabled}/>
 
-                {/* Location Field (Could be a select dropdown) */}
-                <_ZodSelect control={form.control} name={"location"} labelName={"Location"} placeholder={"Select Location"} datas={locations} form={form} disabled={disabled}/>
+                {/* Image Field */}
+                <_ZodInputImage control={form.control} name="file" currentImage={currentImage} labelName="Image" placeholder="Input file" disabled={disabled}/>
 
-                {/* Days Subscribed (Checkboxes for selecting multiple days) */}
-                <_ZodStringCheckbox control={form.control} name={"daySubscribed"} labelName={"Days Subscribed"} datas={days} disabled={disabled}/>
-
-                {/* Subscription and Active Status Fields */}
-                <_ZodBoolean control={form.control} name={"isSubscribed"} labelName={"Subscription"} disabled={disabled}/>
+                {/* Description Field */}
+                <_ZodInputArea control={form.control} name="description" labelName="Description" placeholder="Input description here" disabled={disabled}/>
 
                 {/* Active Status Field */}
                 <_ZodBooleanSelectActive control={form.control} name="isActive" labelName="Active Status" disabled={disabled}/>

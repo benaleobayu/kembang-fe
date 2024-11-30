@@ -55,32 +55,34 @@ export function SideMenu() {
     }, []); // Empty dependency array to run once on mount
 
     return (
-        <Command className="rounded-lg border shadow-md w-full min-h-screen">
-            <CommandInput placeholder="Type a command or search..." />
-            <CommandList className="max-h-[100vh-200px]">
-                <CommandEmpty>No results found.</CommandEmpty>
-                <CommandSeparator />
-                {menus.length > 0 && menus.map((group) => (
-                    <CommandGroup key={group.id} heading={group.name}>
-                        {group.menus.length > 0 ? (
-                            group.menus.map((menu) => {
-                                const IconComponent = iconMap[menu.icon];
-                                return (
-                                <Link key={menu.id} href={menu.link} passHref>
-                                    <CommandItem>
-                                        {IconComponent && <IconComponent/>} {/* Render the icon */}
-                                        <span>{menu.name}</span>
-                                    </CommandItem>
-                                </Link>
-                            )})
-                        ) : (
-                            <CommandItem>
-                                <span>No Menus Available</span>
-                            </CommandItem>
-                        )}
-                    </CommandGroup>
-                ))}
-            </CommandList>
-        </Command>
+        <div className="fixed">
+            <Command className="rounded-lg border shadow-md w-full max-h-[calc(100vh-200px)]">
+                <CommandInput placeholder="Type a command or search..." />
+                <CommandList className="">
+                    <CommandEmpty>No results found.</CommandEmpty>
+                    <CommandSeparator />
+                    {menus.length > 0 && menus.map((group) => (
+                        <CommandGroup key={group.id} heading={group.name}>
+                            {group.menus.length > 0 ? (
+                                group.menus.map((menu) => {
+                                    const IconComponent = iconMap[menu.icon];
+                                    return (
+                                        <Link key={menu.id} href={menu.link} passHref>
+                                            <CommandItem>
+                                                {IconComponent && <IconComponent/>} {/* Render the icon */}
+                                                <span>{menu.name}</span>
+                                            </CommandItem>
+                                        </Link>
+                                    )})
+                            ) : (
+                                <CommandItem>
+                                    <span>No Menus Available</span>
+                                </CommandItem>
+                            )}
+                        </CommandGroup>
+                    ))}
+                </CommandList>
+            </Command>
+        </div>
     );
 }

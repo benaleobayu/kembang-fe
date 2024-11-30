@@ -59,9 +59,9 @@ const data = [
             },
             {
                 id: 3,
-                name: 'Brand',
+                name: 'Product Category',
                 icon: 'LuFlagTriangleRight',
-                link: '/cms/v1/ms/brands'
+                link: '/cms/v1/ms/product_category'
             }
         ]
     },

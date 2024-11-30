@@ -1,35 +1,36 @@
 "use client";
 
 import {ColumnDef} from "@tanstack/react-table";
-import {LocationIndex} from "@/types/LocationIndex";
 import {Checkbox} from "@/components/ui/checkbox";
 import _ColumnInput from "@/components/apps/globals/elements/data-table/column-input";
 import ActionCell from "@/components/ActionCell";
 import {routesUrl} from "@/components/apps/globals/options/routes";
 import axios from "axios";
 import {toast} from "sonner";
+import {ProductIndex} from "@/types/ProductIndex";
 
 // Define URL for API calls
-const urlRoute = routesUrl.find(data => data.key === "location")?.url;
-const apiRoute = routesUrl.find(data => data.key === "locationApi")?.url;
+const urlRoute = routesUrl.find(data => data.key === "productCategory")?.url;
+const apiRoute = routesUrl.find(data => data.key === "productCategoryApi")?.url;
+const mainName = "Product";
 
 const removeRow = async (meta: any, index: number) => {
     const route = `${apiRoute}/${index}`
     const response = await axios.delete(route)
-    if (response.data.success){
+    if (response.data.success) {
         if (meta && typeof meta.removeRow === "function") {
-            toast.success("Location deleted successfully!");
+            toast.success(`${mainName} deleted successfully!`);
             meta.removeRow(index); // Menghapus berdasarkan ID
         } else {
             toast.error("Failed to remove row table.");
             console.error("removeRow function is not available or meta is undefined");
         }
-    }else {
-        toast.error("Failed to delete location.");
+    } else {
+        toast.error(`Failed to delete ${mainName.toLowerCase()}.`);
     }
 }
 
-export const LocationColumnTable: ColumnDef<LocationIndex>[] = [
+export const ProductColumnTable: ColumnDef<ProductIndex>[] = [
     {
         id: "select",
         header: ({table}) => (
@@ -53,10 +54,12 @@ export const LocationColumnTable: ColumnDef<LocationIndex>[] = [
         enableHiding: false,
     },
     _ColumnInput({key: "index", name: "ID"}),
+    _ColumnInput({key: "image", name: "Image"}),
     _ColumnInput({key: "name", name: "Name"}),
-    _ColumnInput({key: "province", name: "Province"}),
-    _ColumnInput({key: "orders", name: "Orders"}),
+    _ColumnInput({key: "price", name: "Price"}),
+    _ColumnInput({key: "category", name: "Category"}),
     _ColumnInput({key: "createdAt", name: "Created At"}),
+    _ColumnInput({key: "updatedAt", name: "Updated At"}),
     {
         id: "actions",
         enableHiding: false,

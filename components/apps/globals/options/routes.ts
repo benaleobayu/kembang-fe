@@ -1,4 +1,3 @@
-
 const authUrl = "/auth"
 const cmsUrl = "/cms/v1"
 const apiUrl = "/api"
@@ -10,6 +9,14 @@ export const routesUrl: Array<{ key: string, url: string }> = [
 
     {key: "location", url: cmsUrl + "/ms/locations"},
     {key: "locationApi", url: apiUrl + "/ms/locations"},
+
+    {key: "productCategory", url: cmsUrl + "/ms/product_category"},
+    {key: "productCategoryApi", url: apiUrl + "/ms/product_category"},
+
+    {key: "product", url: cmsUrl + "/ms/products"},
+    {key: "productApi", url: apiUrl + "/ms/products"},
+    {key: "productServer", url: "/ms/product"},
+
 
     {key: "customer", url: cmsUrl + "/customers"},
     {key: "customerApi", url: apiUrl + "/customers"},

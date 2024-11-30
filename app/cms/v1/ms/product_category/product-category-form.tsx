@@ -21,8 +21,6 @@ const FormSchema = z.object({
     name: z.string().min(3, {
         message: "Name must be at least 3 characters.",
     }),
-    province: z.string(),
-    orders: z.number(),
     isActive: z.boolean(),
 });
 
@@ -31,10 +29,11 @@ type FormType = {
     edit?: boolean;
 };
 
-const urlRoute = routesUrl.find(data => data.key === "locationApi")?.url;
+const apiRoute = routesUrl.find(data => data.key === "productCategoryApi")?.url;
+const urlRoute = routesUrl.find(data => data.key === "productCategory")?.url;
+const mainName = "Product Category";
 
-
-export default function FormLocation({formType = "create", id}: FormType) {
+export default function ProductCategoryForm({formType = "create", id}: FormType) {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -51,8 +50,6 @@ export default function FormLocation({formType = "create", id}: FormType) {
         resolver: zodResolver(FormSchema),
         defaultValues: {
             name: "",
-            province: "Tangerang Selatan",
-            orders: 1,
             isActive: true,
         },
     });
@@ -67,11 +64,11 @@ export default function FormLocation({formType = "create", id}: FormType) {
                 setLoading(true);
                 setError(null);
                 try {
-                    const response = await axios.get(`${urlRoute}/${id || idFromPath}`);
+                    const response = await axios.get(`${apiRoute}/${id || idFromPath}`);
                     setData(response.data.data);
                 } catch (e) {
                     console.error("Error Response:", e.response);
-                    toast.error("Failed to fetch location data.");
+                    toast.error(`Failed to fetch ${mainName.toLowerCase()} data.`);
                     setError(e.response?.data?.message || "An error occurred");
                 } finally {
                     setLoading(false);
@@ -86,8 +83,6 @@ export default function FormLocation({formType = "create", id}: FormType) {
         if (data && isReadOrUpdate) {
             reset({
                 name: data.name || "",
-                province: data.province || "Tangerang Selatan",
-                orders: data.orders || 1,
                 isActive: data.isActive || true,
             });
         }
@@ -100,21 +95,21 @@ export default function FormLocation({formType = "create", id}: FormType) {
     async function onSubmit(formData: z.infer<typeof FormSchema>) {
         try {
             if (formType === "create") {
-                const response = await axios.post(`${urlRoute}/create`, formData);
+                const response = await axios.post(`${apiRoute}/create`, formData);
                 if (response.data.success) {
-                    toast.success("Location created successfully!");
-                    router.push("/cms/v1/ms/locations");
+                    toast.success(`${mainName} created successfully!`);
+                    router.push(urlRoute);
                 } else {
-                    toast.error("Failed to create location.");
+                    toast.error(`Failed to create ${mainName.toLowerCase()}.`);
                 }
             } else if (isReadOrUpdate) {
                 const idFromPath = window.location.pathname.split("/").at(-1);
-                const response = await axios.put(`${urlRoute}/${id || idFromPath}`, formData);
+                const response = await axios.put(`${apiRoute}/${id || idFromPath}`, formData);
                 if (response.data.success) {
-                    toast.success("Location updated successfully!");
-                    router.push("/cms/v1/ms/locations");
+                    toast.success(`${mainName} updated successfully!`);
+                    router.push(urlRoute);
                 } else {
-                    toast.error("Failed to update location.");
+                    toast.error(`Failed to update ${mainName.toLowerCase()}.`);
                 }
             }
         } catch (error) {
@@ -124,10 +119,8 @@ export default function FormLocation({formType = "create", id}: FormType) {
     }
 
     const handleBack = () => {
-        const urlRoute = routesUrl.find(route => route.key === 'location');
-
         if (urlRoute) {
-            router.push(urlRoute.url);
+            router.push(urlRoute);
         } else {
             console.error('Route not found!');
         }
@@ -140,35 +133,10 @@ export default function FormLocation({formType = "create", id}: FormType) {
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4">
                 {/* Name Field */}
-                <_ZodInput control={form.control} name="name" labelName="Name" placeholder="Input name" disabled={disabled} />
-
-                {/* Province Field */}
-                <_ZodSelect
-                    control={form.control}
-                    name="province"
-                    labelName="Province"
-                    datas={provinces}
-                    form={form}
-                    disabled={disabled}
-                />
-
-                {/* Orders Field */}
-                <_ZodInput
-                    control={form.control}
-                    name="orders"
-                    labelName="Orders"
-                    placeholder="Input your order"
-                    type="number"
-                    disabled={disabled}
-                />
+                <_ZodInput control={form.control} name="name" labelName="Name" placeholder="Input name" disabled={disabled}/>
 
                 {/* Active Status Field */}
-                <_ZodBooleanSelectActive
-                    control={form.control}
-                    name="isActive"
-                    labelName="Active Status"
-                    disabled={disabled}
-                />
+                <_ZodBooleanSelectActive control={form.control} name="isActive" labelName="Active Status" disabled={disabled}/>
 
                 {/* Submit Button */}
                 <div className="flex justify-between items-center">

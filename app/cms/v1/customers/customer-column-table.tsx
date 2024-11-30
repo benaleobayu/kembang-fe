@@ -1,13 +1,14 @@
 "use client"
 
 import {ColumnDef} from "@tanstack/react-table";
-import {LocationIndex} from "@/types/locationIndex";
+import {LocationIndex} from "@/types/LocationIndex";
 import {Checkbox} from "@/components/ui/checkbox";
 import _ColumnInput from "@/components/apps/globals/elements/data-table/column-input";
 import ActionCell from "@/components/ActionCell";
 import {routesUrl} from "@/components/apps/globals/options/routes";
 import axios from "axios";
 import {toast} from "sonner";
+import {CustomerIndex} from "@/types/CustomerIndex";
 
 // Define URL for API calls
 const urlRoute = routesUrl.find(data => data.key === "customer")?.url;
@@ -30,7 +31,7 @@ const removeRow = async (meta: any, index: number) => {
     }
 }
 
-export const CustomerColumnTable: ColumnDef<LocationIndex>[] = [
+export const CustomerColumnTable: ColumnDef<CustomerIndex>[] = [
     {
         id: "select",
         header: ({table}) => (
