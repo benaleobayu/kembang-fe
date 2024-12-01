@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthToken } from "@/utils/intercept-token";
 import { routesUrl } from "@/components/apps/globals/options/routes";
 
-const apiRoute = routesUrl.find(data => data.key === "productServer")?.url;
+const apiServer = routesUrl.find(data => data.key === "productServer")?.url;
 
 export async function POST(req: NextRequest) {
     const token = getAuthToken(req);
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
             backendFormData.append("file", file);
         }
 
-        const response = await fetch(`${process.env.API_URL}${apiRoute}`, {
+        const response = await fetch(`${process.env.API_URL}/${apiServer}`, {
             method: 'POST',
             headers: {
                 Authorization: `Bearer ${token}`,

@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 import {getAuthToken} from "@/utils/intercept-token";
+import {routesUrl} from "@/components/apps/globals/options/routes";
+
+const apiServer = routesUrl.find(data => data.key === "productServer")?.url;
 
 export async function GET(request) {
     const token = getAuthToken(request);
@@ -13,7 +16,7 @@ export async function GET(request) {
         const keyword = url.searchParams.get('keyword') || '';
 
         // Construct the API URL with dynamic query parameters
-        const apiUrl = `${process.env.API_URL}/ms/product?pages=${pages}&limit=${limit}&sortBy=${sortBy}&direction=${direction}&keyword=${keyword}`;
+        const apiUrl = `${process.env.API_URL}/${apiServer}?pages=${pages}&limit=${limit}&sortBy=${sortBy}&direction=${direction}&keyword=${keyword}`;
 
         const response = await fetch(apiUrl, {
             method: 'GET',

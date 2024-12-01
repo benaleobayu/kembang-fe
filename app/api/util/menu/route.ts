@@ -49,7 +49,7 @@ const data = [
                 id: 1,
                 name: 'Products',
                 icon: 'LuBoxes',
-                link: '/cms/v1/ms/products'
+                link: '/cms/v1/ms/orders'
             },
             {
                 id: 2,

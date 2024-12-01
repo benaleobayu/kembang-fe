@@ -18,14 +18,14 @@ const removeRow = async (meta: any, index: number) => {
     const response = await axios.delete(route)
     if (response.data.success){
         if (meta && typeof meta.removeRow === "function") {
-            toast.success("Location deleted successfully!");
+            toast.success("Product category deleted successfully!");
             meta.removeRow(index); // Menghapus berdasarkan ID
         } else {
             toast.error("Failed to remove row table.");
             console.error("removeRow function is not available or meta is undefined");
         }
     }else {
-        toast.error("Failed to delete location.");
+        toast.error("Failed to delete product cateogry.");
     }
 }
 

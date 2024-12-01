@@ -4,7 +4,7 @@ import {routesUrl} from "@/components/apps/globals/options/routes";
 
 
 const apiServer = routesUrl.find(data => data.key === "productServer")?.url;
-const apiRoute = `${process.env.API_URL}${apiServer}`
+const apiRoute = `${process.env.API_URL}/${apiServer}`
 
 export async function GET(request: Request, {params}: { params: { id: string } }) {
     const token = getAuthToken(request);

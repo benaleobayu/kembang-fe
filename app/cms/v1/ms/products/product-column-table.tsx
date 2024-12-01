@@ -10,8 +10,8 @@ import {toast} from "sonner";
 import {ProductIndex} from "@/types/ProductIndex";
 
 // Define URL for API calls
-const urlRoute = routesUrl.find(data => data.key === "productCategory")?.url;
-const apiRoute = routesUrl.find(data => data.key === "productCategoryApi")?.url;
+const urlRoute = routesUrl.find(data => data.key === "product")?.url;
+const apiRoute = routesUrl.find(data => data.key === "productApi")?.url;
 const mainName = "Product";
 
 const removeRow = async (meta: any, index: number) => {

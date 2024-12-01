@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import {getAuthToken} from "@/utils/intercept-token";
 import axios from "axios";
+import {routesUrl} from "@/components/apps/globals/options/routes";
 
-const mainName = "customers"
-const apiRoute = `${process.env.API_URL}/${mainName}`
+const apiServer = routesUrl.find(data => data.key === "customerServer")?.url;
+const apiRoute = `${process.env.API_URL}/${apiServer}`
 export async function GET(request: Request, {params}: { params: { id: string } }) {
     const token = getAuthToken(request);
     const {id} = params

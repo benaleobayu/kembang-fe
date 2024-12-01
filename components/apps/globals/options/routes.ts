@@ -15,10 +15,16 @@ export const routesUrl: Array<{ key: string, url: string }> = [
 
     {key: "product", url: cmsUrl + "/ms/products"},
     {key: "productApi", url: apiUrl + "/ms/products"},
-    {key: "productServer", url: "/ms/product"},
+    {key: "productServer", url: "ms/product"},
+
+    {key: "order", url: cmsUrl + "/ms/orders"},
+    {key: "orderApi", url: apiUrl + "/ms/orders"},
+    {key: "orderServer", url: "ms/order"},
 
 
     {key: "customer", url: cmsUrl + "/customers"},
     {key: "customerApi", url: apiUrl + "/customers"},
+    {key: "customerServer", url: "customers"},
+
 
 ]

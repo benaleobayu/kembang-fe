@@ -1,11 +1,14 @@
 import { NextResponse } from 'next/server';
 import {getAuthToken} from "@/utils/intercept-token";
+import {routesUrl} from "@/components/apps/globals/options/routes";
+
+
+const apiServer = routesUrl.find(data => data.key === "customerServer")?.url;
 
 export async function GET(request) {
     const token = getAuthToken(request);
     try {
 
-        const main = "customers"
         const url = new URL(request.url);
         const pages = url.searchParams.get('pages') || 0;  // Default to 0 if no page param
         const limit = url.searchParams.get('limit') || 10;  // Default to 10 if no limit param
@@ -17,7 +20,7 @@ export async function GET(request) {
         const isExport = url.searchParams.get('export') || false;
 
         // Construct the API URL with dynamic query parameters
-        const apiUrl = `${process.env.API_URL}/${main}?pages=${pages}&limit=${limit}&sortBy=${sortBy}&direction=${direction}&keyword=${keyword}&location=${location}&isSubscriber=${isSubscriber}&isExport=${isExport}`;
+        const apiUrl = `${process.env.API_URL}/${apiServer}?pages=${pages}&limit=${limit}&sortBy=${sortBy}&direction=${direction}&keyword=${keyword}&location=${location}&isSubscriber=${isSubscriber}&isExport=${isExport}`;
 
         const response = await fetch(apiUrl, {
             method: 'GET',
