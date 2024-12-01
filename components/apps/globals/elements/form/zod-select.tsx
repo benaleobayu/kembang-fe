@@ -28,7 +28,7 @@ export default function _ZodSelect(props: Props) {
             render={({ field }) => {
                 const label = datas.find(data => data.value === field.value)?.label || '';
                 return (
-                    <FormItem className="flex flex-col">
+                    <FormItem className="">
                         {disabled ? (
                             <FormItem>
                                 <FormLabel>{labelName}</FormLabel>
@@ -96,9 +96,11 @@ export default function _ZodSelect(props: Props) {
                                 </Popover>
                             </>
                         )}
-                        <FormDescription>
-                            {description}
-                        </FormDescription>
+                        {description && (
+                            <FormDescription>
+                                {description}
+                            </FormDescription>
+                        )}
                         <FormMessage />
                     </FormItem>
                 )

@@ -31,7 +31,7 @@ const data = [
                 id: 3,
                 name: 'Orders',
                 icon: 'LuIndent',
-                link: '/cms/v1/orders'
+                link: '/cms/v1/order'
             },
             {
                 id: 4,
@@ -49,7 +49,7 @@ const data = [
                 id: 1,
                 name: 'Products',
                 icon: 'LuBoxes',
-                link: '/cms/v1/ms/orders'
+                link: '/cms/v1/ms/order'
             },
             {
                 id: 2,

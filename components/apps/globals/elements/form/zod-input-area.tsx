@@ -23,7 +23,6 @@ export default function _ZodInputArea({control, name, labelName, placeholder, di
                         <Textarea
                             disabled={disabled}
                             placeholder={placeholder}
-                            className="resize-none"
                             {...field}
                         />
                     </FormControl>

@@ -2,7 +2,7 @@
 
 import {toast} from "sonner";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {useForm} from "react-hook-form";
+import {useFieldArray, useForm, useFormContext, useWatch} from "react-hook-form";
 import {z} from "zod";
 import {Button} from "@/components/ui/button";
 import {Form} from "@/components/ui/form";
@@ -15,20 +15,35 @@ import {useEffect, useState} from "react";
 import _ZodBooleanSelectActive from "@/components/apps/globals/elements/form/zod-boolean-select-active";
 import {routesUrl} from "@/components/apps/globals/options/routes";
 import _ZodInputArea from "@/components/apps/globals/elements/form/zod-input-area";
-import _ZodInputImage from "@/components/apps/globals/elements/form/zod-input-image";
 import {SelectOptions} from "@/types/SelectOptions";
+import _ZodBooleanSelect from "@/components/apps/globals/elements/form/zod-boolean-select";
+import {__MyCard} from "@/components/apps/globals/elements/mycard";
+import _ZodBoolean from "@/components/apps/globals/elements/form/zod-boolean";
+import _ZodDatePicker from "@/components/apps/globals/elements/form/zod-date-picker";
+import {customerOptions} from "@/services/options/customerOptionsService";
+import {productOptions} from "@/services/options/productOptionsService";
+import {format} from "date-fns";
 
 // Zod validation schema
 const FormSchema = z.object({
-    file: z.instanceof(File).nullable().optional(),
-    name: z.string().min(3, {
-        message: "Name must be at least 3 characters.",
+    customerId: z.string(),
+    forwardName: z.string(),
+    forwardAddress: z.string(),
+    description: z.string(),
+    orderDate: z.date(),
+    deliveryDate: z.date(),
+    orderProducts: z.array(
+        z.object({
+            productId: z.string(),
+            quantity: z.number().int(),
+            orderNote: z.string(),
+        }),
+    ).min(1, {
+        message: "At least one order product is required.",
     }),
-    description: z.string().nullable(),
-    categoryId: z.string().min(1, {
-        message: "Category is required.",
-    }),
-    price: z.number().nullable(),
+    driverName: z.string(),
+    route: z.number().int(),
+    isPaid: z.boolean(),
     isActive: z.boolean(),
 });
 
@@ -37,17 +52,17 @@ type FormType = {
     edit?: boolean;
 };
 
-const apiRoute = routesUrl.find(data => data.key === "productApi")?.url;
-const urlRoute = routesUrl.find(data => data.key === "product")?.url;
-const mainName = "Product";
+const apiRoute = routesUrl.find(data => data.key === "orderApi")?.url;
+const urlRoute = routesUrl.find(data => data.key === "order")?.url;
+const mainName = "Order";
 
 export default function OrderForm({formType = "create", id}: FormType) {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [isEditable, setIsEditable] = useState(formType === "create");
-    const [categories, setCategories] = useState<SelectOptions>([]);
-    const [currentImage, setCurrentImage] = useState<string | null>(null);
+    const [customers, setCustomers] = useState<SelectOptions>([]);
+    const [products, setProducts] = useState<SelectOptions>([]);
 
     const router = useRouter();
     const url = new URL(window.location.href);
@@ -59,16 +74,45 @@ export default function OrderForm({formType = "create", id}: FormType) {
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
-            file: null,
-            name: "",
+            customerId: "",
+            forwardName: "",
+            forwardAddress: "",
             description: "",
-            categoryId: "",
-            price: 0,
+            orderDate: new Date("2024-12-01"),
+            deliveryDate: new Date("2024-12-01"),
+            orderProducts: [
+                {
+                    productId: "",
+                    quantity: 0,
+                    orderNote: "",
+                },
+            ],
+            driverName: "",
+            route: 0,
+            isPaid: true,
             isActive: true,
         },
     });
 
     const {reset} = form;
+    const { control, setValue } = useFormContext();
+
+    const {fields, append, remove} = useFieldArray({
+        control: form.control,
+        name: "orderProducts",
+    });
+
+    const direct = useWatch({
+        control: control,
+        name: "direct",
+        defaultValue: false
+    })
+
+    // Update the "direct" value based on data.forwardName or data.forwardAddress
+    useEffect(() => {
+        const isDirect = Boolean(data.forwardName?.trim() || data.forwardAddress?.trim());
+        setValue("direct", isDirect); // Update the form value
+    }, [data.forwardName, data.forwardAddress, setValue]); // Re-run effect when data changes
 
     // Fetch data
     useEffect(() => {
@@ -93,48 +137,62 @@ export default function OrderForm({formType = "create", id}: FormType) {
         }
     }, [formType, id, isReadOrUpdate]);
 
-    useEffect(() => {
-        const fetchCategories = async () => {
-            const apiRouteCategory = routesUrl.find(data => data.key === "productCategoryApi")?.url;
+    useEffect(() => { // fet customer options
+        const fetchData = async () => {
             setLoading(true);
             setError(null);
             try {
-                const response = await axios.get(`${apiRouteCategory}?limit=1000`);
-                const mapResponse = response.data.data.result;
-
-                // Map to LocationOptions interface
-                const dataOptions: SelectOptions[] = mapResponse.map((data: any) => ({
-                    label: data.name,
-                    value: data.id,
-                }));
-
-                setCategories(dataOptions);
-
+                const fetchCustomerOptions = await customerOptions();
+                setCustomers(fetchCustomerOptions);
             } catch (e) {
                 console.error("Error Response:", e.response);
-                toast.error(`Failed to fetch category data.`);
+                toast.error(`Failed to fetch customers data.`);
                 setError(e.response?.data?.message || "An error occurred");
             } finally {
                 setLoading(false);
             }
-
         };
+        fetchData();
+    }, []);
 
-        fetchCategories();
+    useEffect(() => { // fetch product options
+        const fetchData = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const fetchCustomerOptions = await productOptions();
+                setProducts(fetchCustomerOptions);
+            } catch (e) {
+                console.error("Error Response:", e.response);
+                toast.error(`Failed to fetch customers data.`);
+                setError(e.response?.data?.message || "An error occurred");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
     }, []);
 
     // Update form default values when `data` changes
     useEffect(() => {
         if (data && isReadOrUpdate) {
             reset({
-                file: null,
-                name: data.name || "",
+                customerId: data.customerId || "",
+                forwardName: data.forwardName || "",
+                forwardAddress: data.forwardAddress || "",
                 description: data.description || "",
-                categoryId: data.category || "",
-                price: data.price || "",
+                orderDate: data.orderDate || "2024-12-01",
+                deliveryDate: data.deliveryDate || "2024-12-01",
+                orderProducts: (data.listOrders || []).map((d: any) => ({
+                    productId: d.productId || "",
+                    quantity: d.quantity || 0,
+                    orderNote: d.orderNote || "", // Sesuaikan dengan data yang ada
+                })),
+                driverName: data.driverName || "",
+                route: data.route || 0,
+                isPaid: data.isPaid || true,
                 isActive: data.isActive || true,
             });
-            setCurrentImage(data.image)
         }
     }, [data, isReadOrUpdate, reset]);
 
@@ -145,25 +203,24 @@ export default function OrderForm({formType = "create", id}: FormType) {
     // Submit handler
     async function onSubmit(formData: z.infer<typeof FormSchema>) {
         try {
-            const formDataToSend = new FormData();
-            formDataToSend.append("name", formData.name);
-            formDataToSend.append("description", formData.description);
-            formDataToSend.append("categoryId", formData.categoryId);
-            formDataToSend.append("price", formData.price?.toString());
-            formDataToSend.append("isActive", formData.isActive.toString());
+            // Format orderDate dan deliveryDate ke format 'yyyy-MM-dd'
+            const formattedOrderDate = format(new Date(formData.orderDate), 'yyyy-MM-dd');
+            const formattedDeliveryDate = format(new Date(formData.deliveryDate), 'yyyy-MM-dd');
 
-            // Pastikan hanya menambahkan file jika ada
-            if (formData.file && formData.file instanceof File) {
-                formDataToSend.append("file", formData.file);
-            }
+            // Salin formData dan update orderDate dan deliveryDate
+            const dataToSend = {
+                ...formData,
+                orderDate: formattedOrderDate,
+                deliveryDate: formattedDeliveryDate,
+            };
+
+            // Cek data yang akan dikirim
+            console.log("Data yang akan dikirim:", dataToSend);
 
             if (formType === "create") {
-                const response = await fetch(`${apiRoute}/create`, {
-                    method: 'POST',
-                    body: formDataToSend,
-                });
-
-                if (response.status === 200) {
+                const response = await axios.post(`${apiRoute}/create`, dataToSend);
+                console.log(dataToSend)
+                if (response.data.success) {
                     toast.success(`${mainName} created successfully!`);
                     router.push(urlRoute);
                 } else {
@@ -171,7 +228,7 @@ export default function OrderForm({formType = "create", id}: FormType) {
                 }
             } else if (isReadOrUpdate) {
                 const idFromPath = window.location.pathname.split("/").at(-1);
-                const response = await axios.put(`${apiRoute}/${id || idFromPath}`, formDataToSend);
+                const response = await axios.put(`${apiRoute}/${id || idFromPath}`, dataToSend);
                 if (response.data.success) {
                     toast.success(`${mainName} updated successfully!`);
                     router.push(urlRoute);
@@ -198,24 +255,67 @@ export default function OrderForm({formType = "create", id}: FormType) {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4">
-                {/* Name Field */}
-                <_ZodInput control={form.control} name="name" labelName="Name" placeholder="Input name" disabled={disabled}/>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4 pb-[30vh]">
+                <div className="group grid md:grid-cols-[0.5fr] gap-2">
+                    {/* CustomerId Field -> select customers */}
+                    <_ZodSelect control={form.control} name={"customerId"} labelName={"Customer"} placeholder={"Select Customer"} datas={customers} form={form} disabled={disabled}/>
+                </div>
 
-                {/* Price Field */}
-                <_ZodInput control={form.control} name="price" type="number" labelName="Price" placeholder="Input price" disabled={disabled}/>
-
-                {/* Category Field */}
-                <_ZodSelect control={form.control} name={"categoryId"} labelName={"Category"} placeholder={"Select Category"} datas={categories} form={form} disabled={disabled}/>
-
-                {/* Image Field */}
-                <_ZodInputImage control={form.control} name="file" currentImage={currentImage} labelName="Image" placeholder="Input file" disabled={disabled}/>
+                <div className="group">
+                    {/* Send to Other Person ? Field */}
+                    <_ZodBoolean control={form.control} name={"direct"} labelName={"Send To Other Person?"} disabled={disabled}/>
+                    {direct && (
+                        <>
+                            <div className="group grid md:grid-cols-[0.5fr_1.5fr] md:gap-2">
+                                {/* Forward Name Field */}
+                                <_ZodInput control={form.control} name="forwardName" labelName="Alternative Name" placeholder="Input name" disabled={disabled}/>
+                                {/* Forward Address Field */}
+                                <_ZodInput control={form.control} name="forwardAddress" labelName="Alternative Address" placeholder="Input address" disabled={disabled}/>
+                            </div>
+                        </>
+                    )}
+                </div>
 
                 {/* Description Field */}
                 <_ZodInputArea control={form.control} name="description" labelName="Description" placeholder="Input description here" disabled={disabled}/>
 
-                {/* Active Status Field */}
-                <_ZodBooleanSelectActive control={form.control} name="isActive" labelName="Active Status" disabled={disabled}/>
+                <div className="group grid md:grid-cols-2 grid-cols-1 gap-2">
+                    {/* Order Date Field */}
+                    <_ZodDatePicker control={form.control} name="orderDate" labelName="Order Date" disabled={disabled}/>
+                    {/* Delivery Date Field */}
+                    <_ZodDatePicker control={form.control} name="deliveryDate" labelName="Delivery Date" disabled={disabled}/>
+                </div>
+
+                {/* Order Data List Field */}
+                <__MyCard title="Products" className="relative">
+                    <Button type="button" className="absolute top-6 right-6" onClick={() => append({productId: "", quantity: 0, orderNote: ""})}>
+                        Add +
+                    </Button>
+                    {fields.map((item, index) => (
+                        <div key={item.id} className="grid md:grid-cols-[0.5fr_0.25fr_1fr_0.25fr] md:gap-2 items-end">
+                            {/* Product Field */}
+                            <_ZodSelect control={form.control} name={`orderProducts[${index}].productId`} labelName="Product" placeholder="Select Product" datas={products} form={form} disabled={disabled}/>
+                            {/* Qty Field */}
+                            <_ZodInput control={form.control} name={`orderProducts[${index}].quantity`} type="number" labelName="Quantity" placeholder="Input quantity" disabled={disabled}/>
+                            {/* Note Field */}
+                            <_ZodInput control={form.control} name={`orderProducts[${index}].orderNote`} labelName="Note" placeholder="Input note" disabled={disabled}/>
+                            {/* Button Remove */}
+                            <Button type="button" onClick={() => remove(index)} className="">Remove</Button>
+                        </div>
+                    ))}
+                </__MyCard>
+
+                <div className="group grid md:grid-cols-2 md:gap-2">
+                    {/* Driver Name Field */}
+                    <_ZodInput control={form.control} name="driverName" labelName="Name" placeholder="Input driver name" disabled={disabled}/>
+                    {/* Route Field */}
+                    <_ZodInput control={form.control} name="route" type="number" labelName="Route" placeholder="Input route" disabled={disabled}/>
+                    {/* Paid Field */}
+                    <_ZodBooleanSelect control={form.control} name="isPaid" labelName="Paid Status" disabled={disabled} ifFalse={"No"} ifTrue={"Yes"}/>
+                    {/* Active Status Field */}
+                    <_ZodBooleanSelectActive control={form.control} name="isActive" labelName="Active Status" disabled={disabled}/>
+                </div>
+
 
                 {/* Submit Button */}
                 <div className="flex justify-between items-center">
