@@ -37,8 +37,8 @@ export default function FormLogin(props: Props) {
             .then((response) => {
                 console.log("Response Data:", response.data);
                 if (response.data.success) { // Adjust according to your API response structure
-                    localStorage.setItem('accessToken', response.data.data.accessToken);
-                    sessionStorage.setItem('accessToken', response.data.data.accessToken);
+                    // localStorage.setItem('accessToken', response.data.data.accessToken);
+                    // sessionStorage.setItem('accessToken', response.data.data.accessToken);
                     toast.success("Login Success");
                     router.push('/cms/v1/dashboard')
                 } else {

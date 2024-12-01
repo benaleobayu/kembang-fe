@@ -24,6 +24,7 @@ import {
     LuUserCog,
     LuUsers
 } from "react-icons/lu";
+import __Mytooltips from "@/components/apps/globals/elements/mytooltips";
 
 const iconMap = {
     LuBoxes: LuBoxes,
@@ -55,24 +56,27 @@ export function SideMenu() {
     }, []); // Empty dependency array to run once on mount
 
     return (
-        <div className="fixed">
-            <Command className="rounded-lg border shadow-md w-full max-h-[calc(100vh-200px)]">
+        <div className="relative md:w-[220px] w-20 pl-4 pr-2 py-6 ">
+            <Command className="rounded-lg border shadow-md w-full max-h-[calc(100vh-200px)] absolute top-[100px] left-0">
                 <CommandInput placeholder="Type a command or search..." />
                 <CommandList className="">
                     <CommandEmpty>No results found.</CommandEmpty>
                     <CommandSeparator />
                     {menus.length > 0 && menus.map((group) => (
-                        <CommandGroup key={group.id} heading={group.name}>
+                        <CommandGroup key={group.id} className="md:block flex flex-col items-center" heading={group.name}>
                             {group.menus.length > 0 ? (
                                 group.menus.map((menu) => {
                                     const IconComponent = iconMap[menu.icon];
                                     return (
-                                        <Link key={menu.id} href={menu.link} passHref>
-                                            <CommandItem>
+                                        <__Mytooltips key={menu.id} message={menu.name} className="block w-full">
+                                        <Link href={menu.link} className="block w-full" passHref>
+                                            <CommandItem className="flex items-center content-center">
                                                 {IconComponent && <IconComponent/>} {/* Render the icon */}
-                                                <span>{menu.name}</span>
+                                                <span className="hidden md:block">{menu.name}</span>
                                             </CommandItem>
                                         </Link>
+                                        </__Mytooltips>
+
                                     )})
                             ) : (
                                 <CommandItem>

@@ -1,10 +1,18 @@
-// @flow
+"use client"
 import * as React from 'react';
 import FormLogin from "@/app/cms/auth/login/form_login";
+import axiosInstance from "@/utils/axiosInstance";
 
 type Props = {};
 export default function Page(props: Props) {
-    const myLogo = process.env.PATH_LOGO
+    const [logo, setLogo] = React.useState("");
+
+    React.useEffect(() => {
+        axiosInstance.get('/api/element/logo').then((res) => {
+            console.log(res.data.logo);
+            setLogo(res.data.logo)
+        });
+    }, []);
 
     return (
         <div className="flex justify-center items-center min-h-screen bg-purple-300">
@@ -12,7 +20,7 @@ export default function Page(props: Props) {
 
                 <div className="px-12 py-16 bg-white flex justify-center items-center">
                     <div className=" w-full border">
-                        <img src={myLogo} alt="my logo" className=""/>
+                        <img src={logo || null} alt="my logo" className=""/>
                         <div className="flex flex-col">
                             <p className="text-4xl font-thin text-purple-500">Hello</p>
                             <p className="text-4xl font-bold text-purple-500">Welcome</p>

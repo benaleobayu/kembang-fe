@@ -53,8 +53,7 @@ export function useInitiateDataTable(
                 perPage: data.perPage,
                 totalItems: data.totalItems,
             }));
-        } catch (error) {
-            console.error(error);
+        } catch (error: any) {
             toast.error("Failed to fetch data");
         }
     };
