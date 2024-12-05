@@ -1,4 +1,4 @@
-export const locationOptions: Array<{ value: number, label: string }> = [
+export const locationOptionsHardCode: Array<{ value: number, label: string }> = [
     { value: 1, label: 'Jakarta Utara' },
     { value: 2, label: 'Jakarta Pusat' },
     { value: 3, label: 'Jakarta Selatan' },
