@@ -1,25 +1,23 @@
 "use client";
 import {useEffect, useState} from "react";
 import {Button} from "@/components/ui/button";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu";
 import {MoreHorizontal} from "lucide-react";
 import Link from "next/link";
 import __DeleteDialog from "@/components/DeleteDialog";
+import {OrderFormRouteDialog} from "@/app/cms/v1/order/order-form-route-dialog";
+import OrderFormRoute from "@/app/cms/v1/order/order-form-route";
+import * as React from "react";
 
 interface ActionCellProps {
+    id: string;
     handleDelete?: (e: any) => void;
     isDeleted?: boolean;
-    id: string;
+    isEditRoute?: boolean;
+    children?: React.ReactNode;
 }
 
-const ActionCell: React.FC<ActionCellProps> = ({id, isDeleted, handleDelete}) => {
+const ActionCell: React.FC<ActionCellProps> = ({id, isDeleted, handleDelete, children, isEditRoute}:ActionCellProps) => {
     const [viewDetailsUrl, setViewDetailsUrl] = useState<string | null>(null);
     const [editDetailsUrl, setEditDetailsUrl] = useState<string | null>(null);
 
@@ -51,11 +49,21 @@ const ActionCell: React.FC<ActionCellProps> = ({id, isDeleted, handleDelete}) =>
                 <Link href={editDetailsUrl}>
                     <DropdownMenuItem>Edit</DropdownMenuItem>
                 </Link>
-                {isDeleted && (
+                {children}
+                {isEditRoute && (
                     <DropdownMenuItem>
-                        <__DeleteDialog handleDelete={handleDelete ? handleDelete : () => {}}/>
+                        <OrderFormRouteDialog text={"Edit Route"} title={"Edit Route"}>
+                            <OrderFormRoute id={id}/>
+                        </OrderFormRouteDialog>
                     </DropdownMenuItem>
                 )}
+                {isDeleted && (
+                    <DropdownMenuItem>
+                        <__DeleteDialog handleDelete={handleDelete ? handleDelete : () => {
+                        }}/>
+                    </DropdownMenuItem>
+                )}
+
             </DropdownMenuContent>
         </DropdownMenu>
     );
