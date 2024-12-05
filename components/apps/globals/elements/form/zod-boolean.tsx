@@ -8,10 +8,11 @@ type Props = {
     labelName: string;
     placeholder?: string;
     disabled?: boolean;
+    value?: boolean
 };
 
 export default function _ZodBoolean(props: Props) {
-    const { control, name, labelName, placeholder, disabled } = props;
+    const { control, name, labelName, placeholder, disabled, value } = props;
 
     return (
         <FormField
@@ -23,7 +24,7 @@ export default function _ZodBoolean(props: Props) {
                     <FormControl className="space-y-0">
                         <Checkbox
                             disabled={disabled}
-                            checked={field.value}  // Bind value to checkbox (ensure it's a boolean)
+                            checked={value !== undefined ? value : field.value}  // Bind value to checkbox (ensure it's a boolean)
                             onCheckedChange={(checked) => field.onChange(checked)}  // Toggle the value
                         />
                     </FormControl>
