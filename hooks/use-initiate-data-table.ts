@@ -1,7 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import axios from "axios";
-import { toast } from "sonner";
+import {toast} from "sonner";
 
 interface PaginationState {
     currentPage: number;
@@ -33,7 +33,7 @@ export function useInitiateDataTable(
     const sortBy = sorting.length > 0 ? sorting[0].id : initialSortBy;
     const direction = sorting.length > 0 && sorting[0].desc ? "desc" : initialDirection;
 
-    const fetchData = async ({ sortBy, direction, keyword, pagination }: FetchDataParams) => {
+    const fetchData = async ({sortBy, direction, keyword, pagination}: FetchDataParams) => {
         try {
             const response = await axios.get(url, {
                 params: {
@@ -46,7 +46,24 @@ export function useInitiateDataTable(
             });
 
             const data = response.data.data;
-            setData(data.result);
+
+            if (url.includes("/order")) {
+                // Transform data here
+                const transformedData = data.result.map((item: any) => ({
+                    ...item, // Salin semua properti lainnya
+                    dataPerson: {
+                        name: item.customerName ?? "Unknown Name",
+                        forwardName: item.forwardName ?? "Unknown Name",
+                        address: item.customerAddress ?? "Unknown Address",
+                        forwardAddress: item.forwardAddress ?? "Unknown Address",
+                        phone: item.customerPhone ?? "Unknown Phone",
+                    },
+                }));
+                setData(transformedData);
+            } else {
+                setData(data.result);
+            }
+
             setPagination((prev) => ({
                 ...prev,
                 currentPage: data.currentPage,
@@ -57,7 +74,6 @@ export function useInitiateDataTable(
             toast.error("Failed to fetch data");
         }
     };
-
     // Callback untuk menghapus data secara lokal
     const revalidateData = (idToRemove: string) => {
         setData((prevData) => prevData.filter((item: any) => item.id !== idToRemove));
@@ -70,8 +86,8 @@ export function useInitiateDataTable(
     // Debounce keyword search
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
-            setPagination((prev) => ({ ...prev, currentPage: 0 }));
-            fetchData({ sortBy, direction, keyword, pagination });
+            setPagination((prev) => ({...prev, currentPage: 0}));
+            fetchData({sortBy, direction, keyword, pagination});
         }, 1000);
 
         return () => clearTimeout(delayDebounceFn);
@@ -79,7 +95,7 @@ export function useInitiateDataTable(
 
     // Fetch data when pagination, sorting, or direction changes
     useEffect(() => {
-        fetchData({ sortBy, direction, keyword, pagination });
+        fetchData({sortBy, direction, keyword, pagination});
     }, [pagination.currentPage, pagination.perPage, sortBy, direction]);
 
     return {

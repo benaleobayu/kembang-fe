@@ -8,10 +8,11 @@ import {useInitiateReactTable} from "@/hooks/use-initiate-react-table";
 
 type Props = {
     apiRoute: string,
-    columnTable: ColumnDef<any>[]
+    columnTable: ColumnDef<any>[],
+    data?: any,
 }
 
-export function _ReactDataTable({apiRoute, columnTable}: Props) {
+export function _ReactDataTable({apiRoute, columnTable, filterElement}: Props) {
     const {
         data,
         setData,
@@ -65,6 +66,7 @@ export function _ReactDataTable({apiRoute, columnTable}: Props) {
             pagination={pagination}
             setPagination={setPagination}
             columnTable={columnTable}
-        />
+        >
+        </_BodyTable>
     );
 }
