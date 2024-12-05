@@ -5,7 +5,7 @@ import {routesUrl} from "@/components/apps/globals/options/routes";
 import {_ReactDataTable} from "@/components/apps/globals/elements/data-table/react-data-table";
 import {ProductCategoryColumnTable} from "@/app/cms/v1/ms/product_category/product-category-column-table";
 import {ProductColumnTable} from "@/app/cms/v1/ms/products/product-column-table";
-import {OrderColumnTable} from "@/app/cms/v1/orders/order-column-table";
+import {OrderColumnTable} from "@/app/cms/v1/order/order-column-table";
 
 type Props = {};
 export default function Page(props: Props) {

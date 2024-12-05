@@ -16,8 +16,10 @@ import _ZodBooleanSelectActive from "@/components/apps/globals/elements/form/zod
 import {routesUrl} from "@/components/apps/globals/options/routes";
 import _ZodBoolean from "@/components/apps/globals/elements/form/zod-boolean";
 import {daysOptions} from "@/components/apps/globals/options/days";
-import {locationOptions} from "@/components/apps/globals/options/location";
+import {locationOptionsHardCode} from "@/components/apps/globals/options/location";
 import _ZodStringCheckbox from "@/components/apps/globals/elements/form/zod-string-checkbox";
+import {productOptions} from "@/services/options/productOptionsService";
+import {locationOptions} from "@/services/options/locationOptionsService";
 
 interface LocationOptions {
     label: string,
@@ -93,54 +95,28 @@ export default function CustomerForm({formType = "create", id}: FormType) {
         if (isReadOrUpdate) {
             const fetchData = async () => {
                 const idFromPath = window.location.pathname.split("/").at(-1);
-                setLoading(true);
-                setError(null);
                 try {
                     const response = await axios.get(`${apiRoute}/${id || idFromPath}`);
                     setData(response.data.data);
                 } catch (e) {
-                    console.error("Error Response:", e.response);
                     toast.error(`Failed to fetch ${mainName.toLowerCase()} data.`);
-                    setError(e.response?.data?.message || "An error occurred");
-                } finally {
-                    setLoading(false);
                 }
             };
             fetchData();
         }
     }, [formType, id, isReadOrUpdate]);
 
-    useEffect(() => {
-        if (isCreateOrUpdate) {
-            const fetchLocations = async () => {
-                const apiRouteLocation = routesUrl.find(data => data.key === "locationApi")?.url;
-                setLoading(true);
-                setError(null);
-                try {
-                    const response = await axios.get(`${apiRouteLocation}?limit=1000`);
-                    const locationData = response.data.data.result;
-
-                    // Map to LocationOptions interface
-                    const locationOptions: LocationOptions[] = locationData.map((data: any) => ({
-                        label: data.name,
-                        value: data.name,
-                    }));
-
-                    setLocations(locationOptions);
-
-                } catch (e) {
-                    console.error("Error Response:", e.response);
-                    toast.error(`Failed to fetch location data.`);
-                    setError(e.response?.data?.message || "An error occurred");
-                } finally {
-                    setLoading(false);
-                }
-
-            };
-
-            fetchLocations();
-        }
-    }, [isCreateOrUpdate]);
+    useEffect(() => { // fetch product options
+        const fetchData = async () => {
+            try {
+                const fetchData = await locationOptions();
+                setLocations(fetchData);
+            } catch (e) {
+                toast.error(`Failed to fetch products data.`);
+            }
+        };
+        fetchData();
+    }, []);
 
 
 
