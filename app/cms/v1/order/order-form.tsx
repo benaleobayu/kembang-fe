@@ -34,9 +34,10 @@ const FormSchema = z.object({
     deliveryDate: z.date(),
     orderProducts: z.array(
         z.object({
+            orderId: z.string().nullable().optional(),
             productId: z.string(),
             quantity: z.number().int(),
-            orderNote: z.string(),
+            orderNote: z.string().nullable(),
         }),
     ).min(1, {
         message: "At least one order product is required.",
@@ -78,10 +79,11 @@ export default function OrderForm({formType = "create", id}: FormType) {
             forwardName: "",
             forwardAddress: "",
             description: "",
-            orderDate: new Date("2024-12-01"),
-            deliveryDate: new Date("2024-12-01"),
+            orderDate: new Date(),
+            deliveryDate: new Date(),
             orderProducts: [
                 {
+                    orderId: "",
                     productId: "",
                     quantity: 0,
                     orderNote: "",
@@ -95,33 +97,21 @@ export default function OrderForm({formType = "create", id}: FormType) {
     });
 
     const {reset} = form;
-    const { control, setValue } = useFormContext();
 
     const {fields, append, remove} = useFieldArray({
         control: form.control,
         name: "orderProducts",
     });
 
-    const direct = useWatch({
-        control: control,
-        name: "direct",
-        defaultValue: false
-    })
-
-    // Update the "direct" value based on data.forwardName or data.forwardAddress
-    useEffect(() => {
-        const isDirect = Boolean(data.forwardName?.trim() || data.forwardAddress?.trim());
-        setValue("direct", isDirect); // Update the form value
-    }, [data.forwardName, data.forwardAddress, setValue]); // Re-run effect when data changes
 
     // Fetch data
     useEffect(() => {
         if (isReadOrUpdate) {
             const fetchData = async () => {
-                const idFromPath = window.location.pathname.split("/").at(-1);
                 setLoading(true);
                 setError(null);
                 try {
+                    const idFromPath = window.location.pathname.split("/").at(-1);
                     const response = await axios.get(`${apiRoute}/${id || idFromPath}`);
                     setData(response.data.data);
                     console.log(`${apiRoute}/${id || idFromPath}`)
@@ -137,19 +127,19 @@ export default function OrderForm({formType = "create", id}: FormType) {
         }
     }, [formType, id, isReadOrUpdate]);
 
+    const direct = useWatch({
+        control: form.control,
+        name: "direct",
+        defaultValue: !!(data?.forwardName || data?.forwardAddress)
+    })
+
     useEffect(() => { // fet customer options
         const fetchData = async () => {
-            setLoading(true);
-            setError(null);
             try {
-                const fetchCustomerOptions = await customerOptions();
-                setCustomers(fetchCustomerOptions);
+                const fetchData = await customerOptions();
+                setCustomers(fetchData);
             } catch (e) {
-                console.error("Error Response:", e.response);
                 toast.error(`Failed to fetch customers data.`);
-                setError(e.response?.data?.message || "An error occurred");
-            } finally {
-                setLoading(false);
             }
         };
         fetchData();
@@ -157,17 +147,11 @@ export default function OrderForm({formType = "create", id}: FormType) {
 
     useEffect(() => { // fetch product options
         const fetchData = async () => {
-            setLoading(true);
-            setError(null);
             try {
-                const fetchCustomerOptions = await productOptions();
-                setProducts(fetchCustomerOptions);
+                const fetchData = await productOptions();
+                setProducts(fetchData);
             } catch (e) {
-                console.error("Error Response:", e.response);
-                toast.error(`Failed to fetch customers data.`);
-                setError(e.response?.data?.message || "An error occurred");
-            } finally {
-                setLoading(false);
+                toast.error(`Failed to fetch products data.`);
             }
         };
         fetchData();
@@ -177,13 +161,15 @@ export default function OrderForm({formType = "create", id}: FormType) {
     useEffect(() => {
         if (data && isReadOrUpdate) {
             reset({
+                direct: !!(data.forwardName || data.forwardAddress) || false,
                 customerId: data.customerId || "",
                 forwardName: data.forwardName || "",
                 forwardAddress: data.forwardAddress || "",
                 description: data.description || "",
-                orderDate: data.orderDate || "2024-12-01",
-                deliveryDate: data.deliveryDate || "2024-12-01",
+                orderDate: new Date(data.orderDate) || new Date().toISOString().split('T')[0],
+                deliveryDate: new Date(data.deliveryDate) || new Date().toISOString().split('T')[0],
                 orderProducts: (data.listOrders || []).map((d: any) => ({
+                    orderId: d.orderId || "",
                     productId: d.productId || "",
                     quantity: d.quantity || 0,
                     orderNote: d.orderNote || "", // Sesuaikan dengan data yang ada
@@ -213,9 +199,6 @@ export default function OrderForm({formType = "create", id}: FormType) {
                 orderDate: formattedOrderDate,
                 deliveryDate: formattedDeliveryDate,
             };
-
-            // Cek data yang akan dikirim
-            console.log("Data yang akan dikirim:", dataToSend);
 
             if (formType === "create") {
                 const response = await axios.post(`${apiRoute}/create`, dataToSend);
@@ -288,21 +271,32 @@ export default function OrderForm({formType = "create", id}: FormType) {
 
                 {/* Order Data List Field */}
                 <__MyCard title="Products" className="relative">
-                    <Button type="button" className="absolute top-6 right-6" onClick={() => append({productId: "", quantity: 0, orderNote: ""})}>
-                        Add +
-                    </Button>
-                    {fields.map((item, index) => (
-                        <div key={item.id} className="grid md:grid-cols-[0.5fr_0.25fr_1fr_0.25fr] md:gap-2 items-end">
-                            {/* Product Field */}
-                            <_ZodSelect control={form.control} name={`orderProducts[${index}].productId`} labelName="Product" placeholder="Select Product" datas={products} form={form} disabled={disabled}/>
-                            {/* Qty Field */}
-                            <_ZodInput control={form.control} name={`orderProducts[${index}].quantity`} type="number" labelName="Quantity" placeholder="Input quantity" disabled={disabled}/>
-                            {/* Note Field */}
-                            <_ZodInput control={form.control} name={`orderProducts[${index}].orderNote`} labelName="Note" placeholder="Input note" disabled={disabled}/>
-                            {/* Button Remove */}
-                            <Button type="button" onClick={() => remove(index)} className="">Remove</Button>
-                        </div>
-                    ))}
+                    {!disabled && (
+                        <Button type="button" className="absolute top-6 right-6" onClick={() => append({productId: "", quantity: 0, orderNote: ""})}>
+                            Add +
+                        </Button>
+                    )}
+                    {fields.map((item, index) => {
+                        const classDisabled = disabled ? "grid md:grid-cols-[0.5fr_0.25fr_1.25fr] md:gap-2 items-end" : "grid md:grid-cols-[0.5fr_0.25fr_1fr_0.25fr] md:gap-2 items-end"
+                        return(
+                            <div key={item.id} className={classDisabled}>
+                                {/* OrderId Field */}
+                                <div className="hidden">
+                                    <_ZodInput control={form.control} name={`orderProducts[${index}].orderId`} labelName="OrderId" placeholder="Input orderId" disabled={disabled}/>
+                                </div>
+                                {/* Product Field */}
+                                <_ZodSelect control={form.control} name={`orderProducts[${index}].productId`} labelName="Product" placeholder="Select Product" datas={products} form={form} disabled={disabled}/>
+                                {/* Qty Field */}
+                                <_ZodInput control={form.control} name={`orderProducts[${index}].quantity`} type="number" labelName="Quantity" placeholder="Input quantity" disabled={disabled}/>
+                                {/* Note Field */}
+                                <_ZodInput control={form.control} name={`orderProducts[${index}].orderNote`} labelName="Note" placeholder="Input note" disabled={disabled}/>
+                                {/* Button Remove */}
+                                {!disabled && (
+                                    <Button type="button"  onClick={() => remove(index)} className="mt-2 mb-4 md:mb-0">Remove</Button>
+                                )}
+                            </div>
+                        )
+                    })}
                 </__MyCard>
 
                 <div className="group grid md:grid-cols-2 md:gap-2">

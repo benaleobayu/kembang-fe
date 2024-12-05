@@ -8,11 +8,14 @@ import {routesUrl} from "@/components/apps/globals/options/routes";
 import axios from "axios";
 import {toast} from "sonner";
 import {ProductIndex} from "@/types/ProductIndex";
+import * as React from "react";
+import _ColumnListOrder from "@/components/apps/globals/elements/data-table/column-list-order";
+import _ColumnListOrderDataPerson from "@/components/apps/globals/elements/data-table/column-list-order-data-person";
 
 // Define URL for API calls
-const urlRoute = routesUrl.find(data => data.key === "product")?.url;
-const apiRoute = routesUrl.find(data => data.key === "productApi")?.url;
-const mainName = "Product";
+const urlRoute = routesUrl.find(data => data.key === "order")?.url;
+const apiRoute = routesUrl.find(data => data.key === "orderApi")?.url;
+const mainName = "Order";
 
 const removeRow = async (meta: any, index: number) => {
     const route = `${apiRoute}/${index}`
@@ -54,9 +57,8 @@ export const OrderColumnTable: ColumnDef<ProductIndex>[] = [
         enableHiding: false,
     },
     _ColumnInput({key: "index", name: "ID"}),
-    _ColumnInput({key: "customerName", name: "Name"}),
-    _ColumnInput({key: "customerAddress", name: "Address"}),
-    _ColumnInput({key: "customerPhone", name: "Phone"}),
+    _ColumnListOrderDataPerson({key: "dataPerson", name: "Data Person"}),
+    _ColumnListOrder({key: "listOrder", name: "Order"}), // Gunakan _ColumnListOrder di sini
     _ColumnInput({key: "customerLocation", name: "Location"}),
     _ColumnInput({key: "route", name: "Route"}),
     _ColumnInput({key: "deliveryDate", name: "Delivery At"}),
@@ -71,11 +73,14 @@ export const OrderColumnTable: ColumnDef<ProductIndex>[] = [
             return (
                 <ActionCell
                     id={data.id}
+                    isEditRoute={true}
                     isDeleted={true}  // Ubah jika ingin menampilkan status deleted
                     handleDelete={() => {
                         removeRow(meta, data.id)
                     }}
-                />
+                >
+
+                </ActionCell>
             );
         },
     }
