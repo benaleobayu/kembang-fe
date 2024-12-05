@@ -1,15 +1,10 @@
 import * as React from 'react';
-import { Input } from "@/components/ui/input";
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { ChevronDown } from "lucide-react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ColumnDef, flexRender } from "@tanstack/react-table";
+import {Input} from "@/components/ui/input";
+import {DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
+import {Button} from "@/components/ui/button";
+import {ChevronDown} from "lucide-react";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
+import {ColumnDef, flexRender} from "@tanstack/react-table";
 
 type Props = {
     columnTable: ColumnDef<any>[],
@@ -21,14 +16,13 @@ type Props = {
         perPage: number,
         totalItems: number
     },
-    setPagination: (value: any) => void
+    setPagination: (value: any) => void,
 };
 
 export default function _BodyTable(props: Props) {
-    const { columnTable, table, keyword, setKeyword, pagination, setPagination } = props;
+    const {columnTable, table, keyword, setKeyword, pagination, setPagination} = props;
 
     const canNextPage = pagination.currentPage < Math.ceil(pagination.totalItems / pagination.perPage) - 1;
-
     // Function to check if a string is a URL
     const isUrl = (value: string): boolean => {
         const pattern = /^(https?:\/\/[^\s]+)$/;
@@ -64,7 +58,7 @@ export default function _BodyTable(props: Props) {
                                             column.toggleVisibility(!!value)
                                         }
                                     >
-                                        {column.id}
+                                        {column.columnDef.header}
                                     </DropdownMenuCheckboxItem>
                                 );
                             })}
@@ -129,7 +123,7 @@ export default function _BodyTable(props: Props) {
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage - 1 }))}
+                        onClick={() => setPagination(prev => ({...prev, currentPage: prev.currentPage - 1}))}
                         disabled={pagination.currentPage === 0}
                     >
                         Previous
@@ -137,7 +131,7 @@ export default function _BodyTable(props: Props) {
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage + 1 }))}
+                        onClick={() => setPagination(prev => ({...prev, currentPage: prev.currentPage + 1}))}
                         disabled={!canNextPage}
                     >
                         Next
