@@ -37,16 +37,42 @@ export async function PUT(req: Request, {params}: { params: { id: string } }) {
     const token = getAuthToken(req);
     const {id} = params
     try {
-        const {name, phone, address, location, daySubscribed, isSubscribed, isActive} = await req.json();
-        const response = await fetch(`${apiRoute}/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({name, phone, address, location, daySubscribed, isSubscribed, isActive}),
-        });
+        const body = await req.json();
+        const url = new URL(req.url);
+        const isRoute = url.searchParams.get('isRoute') || false;
+
+        let response;
+        if (!isRoute){
+            const formattedOrderDate = new Date(body.orderDate).toISOString().split('T')[0];
+            const formattedDeliveryDate = new Date(body.deliveryDate).toISOString().split('T')[0];
+
+            response = await fetch(`${apiRoute}/${id}?isRoute=${isRoute}`, {
+                method: 'PUT',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    ...body,
+                    orderDate: formattedOrderDate,
+                    deliveryDate: formattedDeliveryDate,
+                }),
+            });
+        } else {
+            response = await fetch(`${apiRoute}/${id}?isRoute=${isRoute}`, {
+                method: 'PUT',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    ...body,
+                }),
+            });
+        }
+
 
         const data = await response.json();
         return NextResponse.json(data);

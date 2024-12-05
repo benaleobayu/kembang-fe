@@ -17,7 +17,7 @@ export const routesUrl: Array<{ key: string, url: string }> = [
     {key: "productApi", url: apiUrl + "/ms/products"},
     {key: "productServer", url: "ms/product"},
 
-    {key: "order", url: cmsUrl + "/orders"},
+    {key: "order", url: cmsUrl + "/order"},
     {key: "orderApi", url: apiUrl + "/order"},
     {key: "orderServer", url: "order"},
 

@@ -9,10 +9,8 @@ export async function POST(req: NextRequest) {
     const token = getAuthToken(req);
 
     try {
-        // Baca body sekali dan simpan di variabel
         const body = await req.json();
 
-        // Format tanggal sebelum mengirimkan
         const formattedOrderDate = new Date(body.orderDate).toISOString().split('T')[0];
         const formattedDeliveryDate = new Date(body.deliveryDate).toISOString().split('T')[0];
 
