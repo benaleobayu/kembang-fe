@@ -26,7 +26,7 @@ export default function _ColumnListOrderDataPerson(props: Props) {
 
             if (Array.isArray(listOrder) && listOrder.length > 0) {
                 return (
-                    <div className="flex flex-col space-y-1">
+                    <div className="flex flex-col space-y-1 w-full min-w-[300px] max-w-[400px]">
                         {/* Menampilkan nama untuk setiap order */}
                         {listOrder.map((_, index) => (
                             <div key={index} className="flex flex-col items-start">

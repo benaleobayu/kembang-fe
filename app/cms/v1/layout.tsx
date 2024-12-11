@@ -10,7 +10,7 @@ export default function __Layout({children}: any) {
                 <div className="px-2 border-r-2 pt-[60px]">
                     <SideMenu/>
                 </div>
-                <div className="w-full py-6 px-4 pt-[75px]">
+                <div className="w-full py-6 px-4 pt-[75px] overflow-auto">
                     {children} {/* Konten halaman yang sedang aktif */}
                 </div>
             </div>
