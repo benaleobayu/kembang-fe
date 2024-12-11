@@ -45,6 +45,7 @@ export async function PUT(req: Request, {params}: { params: { id: string } }) {
         const formData = await req.formData();
 
         // Ekstrak parameter
+        const code = formData.get("code") as string;
         const name = formData.get("name") as string;
         const price = formData.get("price") as string;
         const description = formData.get("description") as string;
@@ -54,6 +55,7 @@ export async function PUT(req: Request, {params}: { params: { id: string } }) {
 
         // Bangun FormData baru untuk mengirim ke backend
         const backendFormData = new FormData();
+        backendFormData.append("code", code);
         backendFormData.append("name", name);
         backendFormData.append("price", price);
         backendFormData.append("description", description);

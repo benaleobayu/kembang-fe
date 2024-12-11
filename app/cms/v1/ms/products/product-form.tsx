@@ -21,6 +21,9 @@ import {SelectOptions} from "@/types/SelectOptions";
 // Zod validation schema
 const FormSchema = z.object({
     file: z.instanceof(File).nullable().optional(),
+    code: z.string().min(1, {
+        message: "Code is required.",
+    }),
     name: z.string().min(3, {
         message: "Name must be at least 3 characters.",
     }),
@@ -48,6 +51,7 @@ export default function ProductForm({formType = "create", id}: FormType) {
     const [isEditable, setIsEditable] = useState(formType === "create");
     const [categories, setCategories] = useState<SelectOptions>([]);
     const [currentImage, setCurrentImage] = useState<string | null>(null);
+    const [addMore, setAddMore] = useState(false);
 
     const router = useRouter();
     const url = new URL(window.location.href);
@@ -60,6 +64,7 @@ export default function ProductForm({formType = "create", id}: FormType) {
         resolver: zodResolver(FormSchema),
         defaultValues: {
             file: null,
+            code: "",
             name: "",
             description: "",
             categoryId: "",
@@ -129,6 +134,7 @@ export default function ProductForm({formType = "create", id}: FormType) {
             reset({
                 file: null,
                 name: data.name || "",
+                code: data.code || "",
                 description: data.description || "",
                 categoryId: data.category || "",
                 price: data.price || "",
@@ -146,6 +152,7 @@ export default function ProductForm({formType = "create", id}: FormType) {
     async function onSubmit(formData: z.infer<typeof FormSchema>) {
         try {
             const formDataToSend = new FormData();
+            formDataToSend.append("code", formData.code);
             formDataToSend.append("name", formData.name);
             formDataToSend.append("description", formData.description);
             formDataToSend.append("categoryId", formData.categoryId);
@@ -165,7 +172,12 @@ export default function ProductForm({formType = "create", id}: FormType) {
 
                 if (response.status === 200) {
                     toast.success(`${mainName} created successfully!`);
-                    router.push(urlRoute);
+                    reset();
+                    if (addMore) {
+                        router.push(urlRoute + "/create");
+                    } else {
+                        router.push(urlRoute);
+                    }
                 } else {
                     toast.error(`Failed to create ${mainName.toLowerCase()}.`);
                 }
@@ -199,14 +211,16 @@ export default function ProductForm({formType = "create", id}: FormType) {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4">
-                {/* Name Field */}
-                <_ZodInput control={form.control} name="name" labelName="Name" placeholder="Input name" disabled={disabled}/>
-
-                {/* Price Field */}
-                <_ZodInput control={form.control} name="price" type="number" labelName="Price" placeholder="Input price" disabled={disabled}/>
-
-                {/* Category Field */}
-                <_ZodSelect control={form.control} name={"categoryId"} labelName={"Category"} placeholder={"Select Category"} datas={categories} form={form} disabled={disabled}/>
+                <div className="group grid md:grid-cols-2 grid-cols-1 gap-2">
+                    {/* Code Field */}
+                    <_ZodInput control={form.control} name="code" labelName="Code" placeholder="Input code" disabled={disabled}/>
+                    {/* Name Field */}
+                    <_ZodInput control={form.control} name="name" labelName="Name" placeholder="Input name" disabled={disabled}/>
+                    {/* Price Field */}
+                    <_ZodInput control={form.control} name="price" type="number" labelName="Price" placeholder="Input price" disabled={disabled}/>
+                    {/* Category Field */}
+                    <_ZodSelect control={form.control} name={"categoryId"} labelName={"Category"} placeholder={"Select Category"} datas={categories} form={form} disabled={disabled}/>
+                </div>
 
                 {/* Image Field */}
                 <_ZodInputImage control={form.control} name="file" currentImage={currentImage} labelName="Image" placeholder="Input file" disabled={disabled}/>
@@ -222,7 +236,11 @@ export default function ProductForm({formType = "create", id}: FormType) {
                     <Button onClick={() => handleBack()} type="button" variant="outline">
                         Back
                     </Button>
-                    {formType === "create" && <Button type="submit">Create</Button>}
+                    <div>
+                        {formType === "create" && <Button type="submit">Create</Button>}
+                        {formType === "create" && <Button onClick={() => setAddMore(true)} variant={"outline"} type="submit">Add more</Button>}
+                    </div>
+
                     {!isEditing && formType === "read" && (
                         <Button
                             type="button"
