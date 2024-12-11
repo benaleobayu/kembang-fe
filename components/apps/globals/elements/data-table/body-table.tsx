@@ -86,20 +86,23 @@ export default function _BodyTable(props: Props) {
                         {table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
                                 <TableRow key={row.id}>
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {/* Check if the cell value is a URL */}
-                                            {isUrl(cell.getValue<string>()) ? (
-                                                <img
-                                                    src={cell.getValue<string>()}
-                                                    alt="Image"
-                                                    className="max-w-[100px] max-h-[100px] object-cover"
-                                                />
-                                            ) : (
-                                                flexRender(cell.column.columnDef.cell, cell.getContext())
-                                            )}
-                                        </TableCell>
-                                    ))}
+                                    {row.getVisibleCells().map((cell) => {
+                                        const isAlignTop = window.location.pathname.includes("/order")
+                                        return(
+                                            <TableCell key={cell.id} className={isAlignTop ? "align-top" : ""}>
+                                                {/* Check if the cell value is a URL */}
+                                                {isUrl(cell.getValue<string>()) ? (
+                                                    <img
+                                                        src={cell.getValue<string>()}
+                                                        alt="Image"
+                                                        className="max-w-[50px] max-h-[50px] object-cover"
+                                                    />
+                                                ) : (
+                                                    flexRender(cell.column.columnDef.cell, cell.getContext())
+                                                )}
+                                            </TableCell>
+                                        )
+                                    })}
                                 </TableRow>
                             ))
                         ) : (

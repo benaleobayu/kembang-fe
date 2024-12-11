@@ -40,6 +40,7 @@ const iconMap = {
 
 export function SideMenu() {
     const [menus, setMenus] = useState([]); // Initialize state with useState
+    const [mdResolution, setMdResolution] = useState(false);
 
     useEffect(() => {
         const fetchMenus = async () => {
@@ -54,6 +55,18 @@ export function SideMenu() {
 
         fetchMenus(); // Call the async function
     }, []); // Empty dependency array to run once on mount
+
+    useEffect(() => {
+        const handleResize = () => {
+            const isMdResolution = window.innerWidth >= 768;
+            setMdResolution(isMdResolution);
+        };
+        handleResize(); // Check initial width
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     return (
         <div className="relative md:w-[220px] w-20 pl-4 pr-2 py-6">
@@ -71,14 +84,23 @@ export function SideMenu() {
                                     group.menus.map((menu) => {
                                         const IconComponent = iconMap[menu.icon];
                                         return (
-                                            <__Mytooltips key={menu.id} message={menu.name} className="block w-full">
-                                                <Link href={menu.link} passHref>
+                                            mdResolution ? (
+                                                <Link key={menu.id} href={menu.link} passHref>
                                                     <CommandItem className="flex items-center content-center">
                                                         {IconComponent && <IconComponent />} {/* Render the icon */}
                                                         <span className="hidden md:block">{menu.name}</span>
                                                     </CommandItem>
                                                 </Link>
-                                            </__Mytooltips>
+                                            ) : (
+                                                <__Mytooltips key={menu.id} message={menu.name} className="block w-full">
+                                                    <Link href={menu.link} passHref>
+                                                        <CommandItem className="flex items-center content-center">
+                                                            {IconComponent && <IconComponent />} {/* Render the icon */}
+                                                            <span className="hidden md:block">{menu.name}</span>
+                                                        </CommandItem>
+                                                    </Link>
+                                                </__Mytooltips>
+                                            )
                                         );
                                     })
                                 ) : (
