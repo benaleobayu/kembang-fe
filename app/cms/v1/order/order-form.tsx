@@ -64,6 +64,7 @@ export default function OrderForm({formType = "create", id}: FormType) {
     const [isEditable, setIsEditable] = useState(formType === "create");
     const [customers, setCustomers] = useState<SelectOptions>([]);
     const [products, setProducts] = useState<SelectOptions>([]);
+    const [addMore, setAddMore] = useState(false);
 
     const router = useRouter();
     const url = new URL(window.location.href);
@@ -114,7 +115,6 @@ export default function OrderForm({formType = "create", id}: FormType) {
                     const idFromPath = window.location.pathname.split("/").at(-1);
                     const response = await axios.get(`${apiRoute}/${id || idFromPath}`);
                     setData(response.data.data);
-                    console.log(`${apiRoute}/${id || idFromPath}`)
                 } catch (e) {
                     console.error("Error Response:", e.response);
                     toast.error(`Failed to fetch ${mainName.toLowerCase()} data.`);
@@ -205,7 +205,11 @@ export default function OrderForm({formType = "create", id}: FormType) {
                 console.log(dataToSend)
                 if (response.data.success) {
                     toast.success(`${mainName} created successfully!`);
-                    router.push(urlRoute);
+                    if (addMore) {
+                        router.push(urlRoute + "/create");
+                    } {
+                        router.push(urlRoute);
+                    }
                 } else {
                     toast.error(`Failed to create ${mainName.toLowerCase()}.`);
                 }
@@ -272,7 +276,7 @@ export default function OrderForm({formType = "create", id}: FormType) {
                 {/* Order Data List Field */}
                 <__MyCard title="Products" className="relative">
                     {!disabled && (
-                        <Button type="button" className="absolute top-6 right-6" onClick={() => append({productId: "", quantity: 0, orderNote: ""})}>
+                        <Button type="button" className="absolute top-6 right-6" onClick={() => append({orderId: "",productId: "", quantity: 0, orderNote: ""})}>
                             Add +
                         </Button>
                     )}
@@ -317,6 +321,7 @@ export default function OrderForm({formType = "create", id}: FormType) {
                         Back
                     </Button>
                     {formType === "create" && <Button type="submit">Create</Button>}
+                    {formType === "create" && <Button onClick={setAddMore} variant="outline" type="submit">Add More</Button>}
                     {!isEditing && formType === "read" && (
                         <Button
                             type="button"
