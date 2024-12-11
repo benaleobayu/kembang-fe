@@ -14,12 +14,14 @@ interface FetchDataParams {
     direction: string;
     keyword: string;
     pagination: PaginationState;
+    filterParams: { [key: string]: string };
 }
 
 export function useInitiateDataTable(
     url: string,
     initialSortBy: string = "updatedAt",
-    initialDirection: string = "desc"
+    initialDirection: string = "desc",
+    filterParams: { [key: string]: string } = {}
 ) {
     const [data, setData] = useState([]);
     const [pagination, setPagination] = useState<PaginationState>({
@@ -33,7 +35,7 @@ export function useInitiateDataTable(
     const sortBy = sorting.length > 0 ? sorting[0].id : initialSortBy;
     const direction = sorting.length > 0 && sorting[0].desc ? "desc" : initialDirection;
 
-    const fetchData = async ({sortBy, direction, keyword, pagination}: FetchDataParams) => {
+    const fetchData = async ({sortBy, direction, keyword, pagination, filterParams}: FetchDataParams) => {
         try {
             const response = await axios.get(url, {
                 params: {
@@ -42,6 +44,7 @@ export function useInitiateDataTable(
                     sortBy: sortBy,
                     direction: direction,
                     keyword: keyword,
+                    ...filterParams
                 },
             });
 
@@ -74,6 +77,7 @@ export function useInitiateDataTable(
             toast.error("Failed to fetch data");
         }
     };
+
     // Callback untuk menghapus data secara lokal
     const revalidateData = (idToRemove: string) => {
         setData((prevData) => prevData.filter((item: any) => item.id !== idToRemove));
@@ -83,20 +87,19 @@ export function useInitiateDataTable(
         }));
     };
 
-    // Debounce keyword search
+    // Debounce untuk keyword search
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
             setPagination((prev) => ({...prev, currentPage: 0}));
-            fetchData({sortBy, direction, keyword, pagination});
         }, 1000);
 
         return () => clearTimeout(delayDebounceFn);
-    }, [keyword, pagination.perPage, sortBy, direction]);
+    }, [keyword]);
 
-    // Fetch data when pagination, sorting, or direction changes
+    // Fetch data saat pagination, sorting, atau direction berubah
     useEffect(() => {
-        fetchData({sortBy, direction, keyword, pagination});
-    }, [pagination.currentPage, pagination.perPage, sortBy, direction]);
+        fetchData({sortBy, direction, keyword, pagination, filterParams});
+    }, [pagination.currentPage, pagination.perPage, sortBy, direction, keyword, JSON.stringify(filterParams)]);
 
     return {
         data,

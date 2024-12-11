@@ -10,9 +10,10 @@ type Props = {
     apiRoute: string,
     columnTable: ColumnDef<any>[],
     data?: any,
+    filterParams: { [key: string]: string };
 }
 
-export function _ReactDataTable({apiRoute, columnTable, filterElement}: Props) {
+export function _ReactDataTable({apiRoute, columnTable, filterParams}: Props) {
     const {
         data,
         setData,
@@ -23,7 +24,7 @@ export function _ReactDataTable({apiRoute, columnTable, filterElement}: Props) {
         keyword,
         setKeyword,
         revalidateData,
-    } = useInitiateDataTable(apiRoute);
+    } = useInitiateDataTable(apiRoute, "updatedAt", "desc", filterParams);
 
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
