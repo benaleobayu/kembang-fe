@@ -11,7 +11,7 @@ export const locationOptions = async (): Promise<SelectOptions[]> => {
 
         return mapResponse.map((data: any) => ({
             label: data.name,
-            value: data.id,
+            value: data.name,
         }));
     } catch (error) {
         throw new Error(error.response?.data?.message || "An error occurred while fetching customer data.");

@@ -139,36 +139,16 @@ export default function LocationForm({formType = "create", id}: FormType) {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4">
-                {/* Name Field */}
-                <_ZodInput control={form.control} name="name" labelName="Name" placeholder="Input name" disabled={disabled} />
-
-                {/* Province Field */}
-                <_ZodSelect
-                    control={form.control}
-                    name="province"
-                    labelName="Province"
-                    datas={provinces}
-                    form={form}
-                    disabled={disabled}
-                />
-
-                {/* Orders Field */}
-                <_ZodInput
-                    control={form.control}
-                    name="orders"
-                    labelName="Orders"
-                    placeholder="Input your order"
-                    type="number"
-                    disabled={disabled}
-                />
-
-                {/* Active Status Field */}
-                <_ZodBooleanSelectActive
-                    control={form.control}
-                    name="isActive"
-                    labelName="Active Status"
-                    disabled={disabled}
-                />
+                <div className="group grid md:grid-cols-2 grid-cols-1 gap-2">
+                    {/* Name Field */}
+                    <_ZodInput control={form.control} name="name" labelName="Name" placeholder="Input name" disabled={disabled} />
+                    {/* Province Field */}
+                    <_ZodSelect control={form.control} name="province" labelName="Province" datas={provinces} form={form} disabled={disabled}/>
+                    {/* Orders Field */}
+                    <_ZodInput control={form.control} name="orders" labelName="Orders" placeholder="Input your order" type="number" disabled={disabled}/>
+                    {/* Active Status Field */}
+                    <_ZodBooleanSelectActive control={form.control} name="isActive" labelName="Active Status" disabled={disabled}/>
+                </div>
 
                 {/* Submit Button */}
                 <div className="flex justify-between items-center">
