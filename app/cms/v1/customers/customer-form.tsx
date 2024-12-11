@@ -2,7 +2,7 @@
 
 import {toast} from "sonner";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {useForm} from "react-hook-form";
+import {useForm, useWatch} from "react-hook-form";
 import {z} from "zod";
 import {Button} from "@/components/ui/button";
 import {Form} from "@/components/ui/form";
@@ -16,17 +16,11 @@ import _ZodBooleanSelectActive from "@/components/apps/globals/elements/form/zod
 import {routesUrl} from "@/components/apps/globals/options/routes";
 import _ZodBoolean from "@/components/apps/globals/elements/form/zod-boolean";
 import {daysOptions} from "@/components/apps/globals/options/days";
-import {locationOptionsHardCode} from "@/components/apps/globals/options/location";
 import _ZodStringCheckbox from "@/components/apps/globals/elements/form/zod-string-checkbox";
-import {productOptions} from "@/services/options/productOptionsService";
 import {locationOptions} from "@/services/options/locationOptionsService";
+import {SelectOptions} from "@/types/SelectOptions";
+import _ZodInputArea from "@/components/apps/globals/elements/form/zod-input-area";
 
-interface LocationOptions {
-    label: string,
-    value: string
-}
-
-// Zod validation schema
 const FormSchema = z.object({
     name: z.string().min(3, {
         message: "Name must be at least 3 characters.",
@@ -42,7 +36,9 @@ const FormSchema = z.object({
     location: z.string().min(1, {
         message: "Location is required.",
     }),
-    daySubscribed: z.array(z.string()).refine((value) => value.some((item) => item), {
+    daySubscribed: z.array(z.string()).optional().refine((value) => {
+        return value ? value.length > 0 : true; // If `value` is undefined, skip validation
+    }, {
         message: "You have to select at least one item.",
     }),
     isSubscribed: z.boolean(),
@@ -64,7 +60,7 @@ export default function CustomerForm({formType = "create", id}: FormType) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [isEditable, setIsEditable] = useState(formType === "create");
-    const [locations, setLocations] = useState<LocationOptions>([]);
+    const [locations, setLocations] = useState<SelectOptions>([]);
 
     const router = useRouter();
     const days = daysOptions;
@@ -82,7 +78,7 @@ export default function CustomerForm({formType = "create", id}: FormType) {
             phone: "",
             address: "",
             location: "", // Assuming a default locations is set
-            daySubscribed: ["nothing"],
+            daySubscribed: [""],
             isSubscribed: false,
             isActive: true,
         },
@@ -106,6 +102,12 @@ export default function CustomerForm({formType = "create", id}: FormType) {
         }
     }, [formType, id, isReadOrUpdate]);
 
+    const isSubscribed = useWatch({
+        control: form.control,
+        name: "isSubscribed",
+        defaultValue: data?.isSubscribed
+    })
+
     useEffect(() => { // fetch product options
         const fetchData = async () => {
             try {
@@ -117,7 +119,6 @@ export default function CustomerForm({formType = "create", id}: FormType) {
         };
         fetchData();
     }, []);
-
 
 
     // Update form default values when `data` changes
@@ -183,26 +184,39 @@ export default function CustomerForm({formType = "create", id}: FormType) {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4">
-                {/* Name Field */}
-                <_ZodInput control={form.control} name={"name"} labelName={"Name"} placeholder={"input your name"} disabled={disabled}/>
 
-                {/* Phone Field */}
-                <_ZodInput control={form.control} name={"phone"} labelName={"Phone"} placeholder={"input your phone"} disabled={disabled}/>
+                <div className="group grid md:grid-cols-2 grid-cols-1 gap-2">
+
+                    {/* Name Field */}
+                    <_ZodInput control={form.control} name={"name"} labelName={"Name"} placeholder={"input your name"} disabled={disabled}/>
+
+                    {/* Phone Field */}
+                    <_ZodInput control={form.control} name={"phone"} labelName={"Phone"} placeholder={"input your phone"} disabled={disabled}/>
+
+                    {/* Location Field (Could be a select dropdown) */}
+                    <_ZodSelect control={form.control} name={"location"} labelName={"Location"} placeholder={"Select Location"} datas={locations} form={form} disabled={disabled}/>
+                </div>
 
                 {/* Address Field */}
-                <_ZodInput control={form.control} name={"address"} labelName={"Address"} placeholder={"input your address"} disabled={disabled}/>
+                <_ZodInputArea control={form.control} name="address" labelName="Address" placeholder="input your address" disabled={disabled}/>
 
-                {/* Location Field (Could be a select dropdown) */}
-                <_ZodSelect control={form.control} name={"location"} labelName={"Location"} placeholder={"Select Location"} datas={locations} form={form} disabled={disabled}/>
 
-                {/* Days Subscribed (Checkboxes for selecting multiple days) */}
-                <_ZodStringCheckbox control={form.control} name={"daySubscribed"} labelName={"Days Subscribed"} datas={days} disabled={disabled}/>
 
                 {/* Subscription and Active Status Fields */}
                 <_ZodBoolean control={form.control} name={"isSubscribed"} labelName={"Subscription"} disabled={disabled}/>
+                {isSubscribed && (
+                    <>
+                        <div className="group grid md:grid-cols-[0.5fr_1.5fr] md:gap-2">
+                            {/* Days Subscribed (Checkboxes for selecting multiple days) */}
+                            <_ZodStringCheckbox control={form.control} name={"daySubscribed"} labelName={"Days Subscribed"} datas={days} disabled={disabled}/>
+                        </div>
+                    </>
+                )}
 
-                {/* Active Status Field */}
-                <_ZodBooleanSelectActive control={form.control} name="isActive" labelName="Active Status" disabled={disabled}/>
+                <div className="group grid md:grid-cols-2 grid-cols-1 gap-2">
+                    {/* Active Status Field */}
+                    <_ZodBooleanSelectActive control={form.control} name="isActive" labelName="Active Status" disabled={disabled}/>
+                </div>
 
                 {/* Submit Button */}
                 <div className="flex justify-between items-center">
