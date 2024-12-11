@@ -27,7 +27,7 @@ export default function _ZodDatePicker({control, name, labelName, description, d
                 control={control}
                 name={name}
                 render={({field}) => (
-                    <FormItem className="flex flex-col">
+                    <FormItem className="">
                         <FormLabel>{labelName}</FormLabel>
                         {disabled ? (
                             <FormControl className={"w-full"}>
