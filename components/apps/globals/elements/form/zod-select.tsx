@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import * as React from 'react';
 import {FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
@@ -16,16 +16,21 @@ type Props = {
     description?: string;
     datas: { label: string, value: number | string }[];
     form: any;
-    disabled?: boolean
+    disabled?: boolean;
+    onChange?: (value: any) => void;
 };
+
 export default function _ZodSelect(props: Props) {
-    const {control, name, labelName, placeholder, description, datas, form, disabled} = props;
+    const {control, name, labelName, placeholder, description, datas, form, disabled, onChange} = props;
+
+    // Manage the Popover open state
+    const [open, setOpen] = React.useState(false);
 
     return (
         <FormField
             control={control}
             name={name}
-            render={({ field }) => {
+            render={({field}) => {
                 const label = datas.find(data => data.value === field.value)?.label || '';
                 return (
                     <FormItem className="">
@@ -39,12 +44,12 @@ export default function _ZodSelect(props: Props) {
                                         value={label}
                                     />
                                 </FormControl>
-                                <FormMessage />
+                                <FormMessage/>
                             </FormItem>
                         ) : (
                             <>
                                 <FormLabel>{labelName}</FormLabel>
-                                <Popover>
+                                <Popover open={open} onOpenChange={setOpen}>
                                     <PopoverTrigger asChild>
                                         <FormControl>
                                             <Button
@@ -60,13 +65,13 @@ export default function _ZodSelect(props: Props) {
                                                         (data) => data.value === field.value
                                                     )?.label
                                                     : `Select ${labelName}`}
-                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
                                             </Button>
                                         </FormControl>
                                     </PopoverTrigger>
                                     <PopoverContent className="w-full p-0">
                                         <Command>
-                                            <CommandInput placeholder={placeholder ? placeholder : `Select ${labelName}`} />
+                                            <CommandInput placeholder={placeholder ? placeholder : `Select ${labelName}`}/>
                                             <CommandList className="max-h-[200px]">
                                                 <CommandEmpty>No data {labelName} found.</CommandEmpty>
                                                 <CommandGroup className={"w-full"}>
@@ -76,7 +81,9 @@ export default function _ZodSelect(props: Props) {
                                                             key={data.value}
                                                             onSelect={() => {
                                                                 form.setValue(name, data.value);
+                                                                setOpen(false); // Close popover after selection
                                                             }}
+                                                            onChange={onChange}
                                                         >
                                                             {data.label}
                                                             <Check
@@ -101,9 +108,9 @@ export default function _ZodSelect(props: Props) {
                                 {description}
                             </FormDescription>
                         )}
-                        <FormMessage />
+                        <FormMessage/>
                     </FormItem>
-                )
+                );
             }}
         />
     );
