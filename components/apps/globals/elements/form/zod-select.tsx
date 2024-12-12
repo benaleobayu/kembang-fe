@@ -14,7 +14,7 @@ type Props = {
     labelName: string;
     placeholder?: string;
     description?: string;
-    datas: { label: string, value: number | string }[];
+    datas: { label: string, value: number | string, address: string , location: string}[];
     form: any;
     disabled?: boolean;
     onChange?: (value: any) => void;
@@ -84,8 +84,9 @@ export default function _ZodSelect(props: Props) {
                                                                 setOpen(false); // Close popover after selection
                                                             }}
                                                             onChange={onChange}
+                                                            className="truncate"
                                                         >
-                                                            {data.label}
+                                                            <b>{data.label}</b> {" - "} [{data.location}] {" - "} {data.address}
                                                             <Check
                                                                 className={cn(
                                                                     "ml-auto",

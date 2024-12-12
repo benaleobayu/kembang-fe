@@ -92,7 +92,7 @@ export default function OrderForm({formType = "create", id}: FormType) {
             ],
             driverName: "",
             route: 0,
-            isPaid: true,
+            isPaid: false,
             isActive: true,
         },
     });
@@ -176,7 +176,7 @@ export default function OrderForm({formType = "create", id}: FormType) {
                 })),
                 driverName: data.driverName || "",
                 route: data.route || 0,
-                isPaid: data.isPaid || true,
+                isPaid: data.isPaid || false,
                 isActive: data.isActive || true,
             });
         }
@@ -205,6 +205,7 @@ export default function OrderForm({formType = "create", id}: FormType) {
                 console.log(dataToSend)
                 if (response.data.success) {
                     toast.success(`${mainName} created successfully!`);
+                    reset();
                     if (addMore) {
                         router.push(urlRoute + "/create");
                     } {
@@ -246,6 +247,8 @@ export default function OrderForm({formType = "create", id}: FormType) {
                 <div className="group grid md:grid-cols-[0.5fr] gap-2">
                     {/* CustomerId Field -> select customers */}
                     <_ZodSelect control={form.control} name={"customerId"} labelName={"Customer"} placeholder={"Select Customer"} datas={customers} form={form} disabled={disabled}/>
+                    {/* Description Field */}
+                    <_ZodInputArea control={form.control} name="customerAddress" labelName="Customer Address" placeholder="Address of customers" disabled={true}/>
                 </div>
 
                 <div className="group">
@@ -281,7 +284,7 @@ export default function OrderForm({formType = "create", id}: FormType) {
                         </Button>
                     )}
                     {fields.map((item, index) => {
-                        const classDisabled = disabled ? "grid md:grid-cols-[0.5fr_0.25fr_1.25fr] md:gap-2 items-end" : "grid md:grid-cols-[0.5fr_0.25fr_1fr_0.25fr] md:gap-2 items-end"
+                        const classDisabled = disabled ? "grid md:grid-cols-[0.5fr_0.25fr_1.25fr] md:gap-2 items-end" : "grid md:grid-cols-[0.5fr_0.25fr_1.1fr_0.15fr] md:gap-2 items-end"
                         return(
                             <div key={item.id} className={classDisabled}>
                                 {/* OrderId Field */}
@@ -296,14 +299,14 @@ export default function OrderForm({formType = "create", id}: FormType) {
                                 <_ZodInput control={form.control} name={`orderProducts[${index}].orderNote`} labelName="Note" placeholder="Input note" disabled={disabled}/>
                                 {/* Button Remove */}
                                 {!disabled && (
-                                    <Button type="button"  onClick={() => remove(index)} className="mt-2 mb-4 md:mb-0">Remove</Button>
+                                    <Button type="button"  onClick={() => remove(index)} variant="outline" className="mt-2 mb-4 md:mb-0 outline outline-2 outline-red-600 hover:bg-red-600 hover:text-white">Remove</Button>
                                 )}
                             </div>
                         )
                     })}
                 </__MyCard>
 
-                <div className="group grid md:grid-cols-2 md:gap-2">
+                <div className="group grid md:grid-cols-4 md:gap-2">
                     {/* Driver Name Field */}
                     <_ZodInput control={form.control} name="driverName" labelName="Name" placeholder="Input driver name" disabled={disabled}/>
                     {/* Route Field */}
@@ -320,8 +323,11 @@ export default function OrderForm({formType = "create", id}: FormType) {
                     <Button onClick={() => handleBack()} type="button" variant="outline">
                         Back
                     </Button>
-                    {formType === "create" && <Button type="submit">Create</Button>}
-                    {formType === "create" && <Button onClick={setAddMore} variant="outline" type="submit">Add More</Button>}
+                    <div className="grid grid-cols-2 gap-2">
+                        {formType === "create" && <Button type="submit">Create</Button>}
+                        {formType === "create" && <Button onClick={() => setAddMore(true)} variant="outline" type="submit">Add More</Button>}
+                    </div>
+
                     {!isEditing && formType === "read" && (
                         <Button
                             type="button"

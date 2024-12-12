@@ -2,7 +2,14 @@ import axios from "axios";
 import { routesUrl } from "@/components/apps/globals/options/routes";
 import { SelectOptions } from "@/types/SelectOptions";
 
-export const customerOptions = async (): Promise<SelectOptions[]> => {
+interface Options {
+    label: string;
+    address: string;
+    location: string;
+    value: string;
+}
+
+export const customerOptions = async (): Promise<Options[]> => {
     const apiRouteData = routesUrl.find(data => data.key === "customerApi")?.url;
 
     try {
@@ -11,6 +18,8 @@ export const customerOptions = async (): Promise<SelectOptions[]> => {
 
         return mapResponse.map((data: any) => ({
             label: data.name,
+            address: data.address,
+            location: data.location,
             value: data.id,
         }));
     } catch (error) {
