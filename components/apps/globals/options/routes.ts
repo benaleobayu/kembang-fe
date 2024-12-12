@@ -27,4 +27,8 @@ export const routesUrl: Array<{ key: string, url: string }> = [
     {key: "customerServer", url: "customers"},
 
 
+
+    {key: "mapsDistanceMatrix", url: "https://maps.gomaps.pro/maps/api/distancematrix/json?"},
+
+
 ]

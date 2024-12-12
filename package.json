@@ -29,6 +29,7 @@
     "clsx": "^2.1.1",
     "cmdk": "1.0.0",
     "date-fns": "^4.1.0",
+    "decimal.js": "^10.4.3",
     "formidable": "^3.5.2",
     "lucide-react": "^0.454.0",
     "multiparty": "^4.2.3",
