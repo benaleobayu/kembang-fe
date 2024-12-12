@@ -18,10 +18,11 @@ type Props = {
     form: any;
     disabled?: boolean;
     onChange?: (value: any) => void;
+    isCustomer?: boolean
 };
 
 export default function _ZodSelect(props: Props) {
-    const {control, name, labelName, placeholder, description, datas, form, disabled, onChange} = props;
+    const {control, name, labelName, placeholder, description, datas, form, disabled, onChange, isCustomer} = props;
 
     // Manage the Popover open state
     const [open, setOpen] = React.useState(false);
@@ -86,7 +87,15 @@ export default function _ZodSelect(props: Props) {
                                                             onChange={onChange}
                                                             className="truncate"
                                                         >
-                                                            <b>{data.label}</b> {" - "} [{data.location}] {" - "} {data.address}
+                                                            {isCustomer ? (
+                                                                <>
+                                                                    <b>{data.label}</b> {" - "} [{data.location}] {" - "} {data.address}
+                                                                </>
+                                                            ):(
+                                                                <>
+                                                                    {data.label}
+                                                                </>
+                                                                )}
                                                             <Check
                                                                 className={cn(
                                                                     "ml-auto",

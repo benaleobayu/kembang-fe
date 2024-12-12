@@ -246,7 +246,7 @@ export default function OrderForm({formType = "create", id}: FormType) {
             <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4 pb-[30vh]">
                 <div className="group grid md:grid-cols-[0.5fr] gap-2">
                     {/* CustomerId Field -> select customers */}
-                    <_ZodSelect control={form.control} name={"customerId"} labelName={"Customer"} placeholder={"Select Customer"} datas={customers} form={form} disabled={disabled}/>
+                    <_ZodSelect control={form.control} name={"customerId"} labelName={"Customer"} placeholder={"Select Customer"} isCustomer datas={customers} form={form} disabled={disabled}/>
                     {/* Description Field */}
                     <_ZodInputArea control={form.control} name="customerAddress" labelName="Customer Address" placeholder="Address of customers" disabled={true}/>
                 </div>
