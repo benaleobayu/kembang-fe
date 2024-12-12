@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
     const token = getAuthToken(req);
 
     try {
-        const {name, phone, address, location, daySubscribed, isSubscribed, isActive} = await req.json();
+        const {name, phone, address, location, distance, daySubscribed, isSubscribed, isActive} = await req.json();
         const response = await fetch(`${process.env.API_URL}/${apiServer}`, {
             method: 'POST',
             headers: {
@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({name, phone, address, location, daySubscribed, isSubscribed, isActive}),
+            body: JSON.stringify({name, phone, address, location, distance, daySubscribed, isSubscribed, isActive}),
         });
         
         const data = await response.json();

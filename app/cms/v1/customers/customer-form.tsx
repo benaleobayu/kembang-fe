@@ -20,6 +20,7 @@ import _ZodStringCheckbox from "@/components/apps/globals/elements/form/zod-stri
 import {locationOptions} from "@/services/options/locationOptionsService";
 import {SelectOptions} from "@/types/SelectOptions";
 import _ZodInputArea from "@/components/apps/globals/elements/form/zod-input-area";
+import {getDistanceAsDecimal} from "@/services/function/get-distance";
 
 const FormSchema = z.object({
     name: z.string().min(3, {
@@ -43,6 +44,7 @@ const FormSchema = z.object({
     }),
     isSubscribed: z.boolean(),
     isActive: z.boolean(),
+    distance: z.string().nullable().optional()
 });
 
 type FormType = {
@@ -141,11 +143,30 @@ export default function CustomerForm({formType = "create", id}: FormType) {
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error}</p>;
 
+    async function fetchDistance(destination: string) {
+        try {
+            const response = await axios.get(`/api/util/maps/distance`, {
+                params: {destination}
+            });
+            console.log('Distance:', response.data.distanceText);
+            return response.data.distanceText; // Jarak dalam meter
+        } catch (error) {
+            console.error('Error fetching distance:', error);
+            throw new Error('Unable to fetch distance');
+        }
+    }
+
     // Submit handler
     async function onSubmit(formData: z.infer<typeof FormSchema>) {
         try {
+            const destination = formData.address;
+            const distance = await fetchDistance(destination);
+            formData.distance = getDistanceAsDecimal(distance).toString();
+            console.log(`Distance: ${distance}`);
+
             if (formType === "create") {
                 const response = await axios.post(`${apiRoute}/create`, formData);
+
                 console.log(response)
                 if (response.data.success) {
                     toast.success(`${mainName} created successfully!`);
@@ -199,7 +220,6 @@ export default function CustomerForm({formType = "create", id}: FormType) {
 
                 {/* Address Field */}
                 <_ZodInputArea control={form.control} name="address" labelName="Address" placeholder="input your address" disabled={disabled}/>
-
 
 
                 {/* Subscription and Active Status Fields */}
