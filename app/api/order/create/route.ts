@@ -11,7 +11,6 @@ export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
 
-        const formattedOrderDate = new Date(body.orderDate).toISOString().split('T')[0];
         const formattedDeliveryDate = new Date(body.deliveryDate).toISOString().split('T')[0];
 
         const response = await fetch(apiRoute, {
@@ -23,7 +22,6 @@ export async function POST(req: NextRequest) {
             },
             body: JSON.stringify({
                 ...body,
-                orderDate: formattedOrderDate,
                 deliveryDate: formattedDeliveryDate,
             }),
         });

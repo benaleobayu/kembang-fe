@@ -30,7 +30,6 @@ const FormSchema = z.object({
     forwardName: z.string(),
     forwardAddress: z.string(),
     description: z.string(),
-    orderDate: z.date(),
     deliveryDate: z.date(),
     orderProducts: z.array(
         z.object({
@@ -42,8 +41,8 @@ const FormSchema = z.object({
     ).min(1, {
         message: "At least one order product is required.",
     }),
-    driverName: z.string(),
-    route: z.number().int(),
+    route: z.string().nullable(),
+    orders: z.number().int(),
     isPaid: z.boolean(),
     isActive: z.boolean(),
 });
@@ -91,7 +90,8 @@ export default function OrderForm({formType = "create", id}: FormType) {
                 },
             ],
             driverName: "",
-            route: 0,
+            route: "",
+            orders: 0,
             isPaid: false,
             isActive: true,
         },
@@ -175,7 +175,8 @@ export default function OrderForm({formType = "create", id}: FormType) {
                     orderNote: d.orderNote || "", // Sesuaikan dengan data yang ada
                 })),
                 driverName: data.driverName || "",
-                route: data.route || 0,
+                route: data.route || "",
+                orders: data.orders || 0,
                 isPaid: data.isPaid || false,
                 isActive: data.isActive || true,
             });
@@ -190,14 +191,18 @@ export default function OrderForm({formType = "create", id}: FormType) {
     async function onSubmit(formData: z.infer<typeof FormSchema>) {
         try {
             // Format orderDate dan deliveryDate ke format 'yyyy-MM-dd'
-            const formattedOrderDate = format(new Date(formData.orderDate), 'yyyy-MM-dd');
             const formattedDeliveryDate = format(new Date(formData.deliveryDate), 'yyyy-MM-dd');
+            let combineRoute = "";
+            console.log(formData.route)
+            if (formData.route && formData.route !== "undefined" && formData.route !== "null" && formData.route !== "") {
+                combineRoute = (formData.route + "_" + formattedDeliveryDate).toString();
+            }
 
             // Salin formData dan update orderDate dan deliveryDate
             const dataToSend = {
                 ...formData,
-                orderDate: formattedOrderDate,
                 deliveryDate: formattedDeliveryDate,
+                route: combineRoute
             };
 
             if (formType === "create") {
@@ -271,7 +276,7 @@ export default function OrderForm({formType = "create", id}: FormType) {
 
                 <div className="group grid md:grid-cols-2 grid-cols-1 gap-2">
                     {/* Order Date Field */}
-                    <_ZodDatePicker control={form.control} name="orderDate" labelName="Order Date" disabled={disabled}/>
+                    {/*<_ZodDatePicker control={form.control} name="orderDate" labelName="Order Date" disabled={disabled}/>*/}
                     {/* Delivery Date Field */}
                     <_ZodDatePicker control={form.control} name="deliveryDate" labelName="Delivery Date" disabled={disabled}/>
                 </div>
@@ -307,10 +312,10 @@ export default function OrderForm({formType = "create", id}: FormType) {
                 </__MyCard>
 
                 <div className="group grid md:grid-cols-4 md:gap-2">
-                    {/* Driver Name Field */}
-                    <_ZodInput control={form.control} name="driverName" labelName="Name" placeholder="Input driver name" disabled={disabled}/>
                     {/* Route Field */}
-                    <_ZodInput control={form.control} name="route" type="number" labelName="Route" placeholder="Input route" disabled={disabled}/>
+                    <_ZodInput control={form.control} name="route" labelName="Route" placeholder="Input route" disabled={disabled}/>
+                    {/*Delivery Order Field*/}
+                    <_ZodInput control={form.control} name="orders" type="number" labelName="Delivery order" placeholder="Input orders" disabled={disabled}/>
                     {/* Paid Field */}
                     <_ZodBooleanSelect control={form.control} name="isPaid" labelName="Paid Status" disabled={disabled} ifFalse={"No"} ifTrue={"Yes"}/>
                     {/* Active Status Field */}

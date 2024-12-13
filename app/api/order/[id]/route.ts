@@ -43,7 +43,6 @@ export async function PUT(req: Request, {params}: { params: { id: string } }) {
 
         let response;
         if (!isRoute){
-            const formattedOrderDate = new Date(body.orderDate).toISOString().split('T')[0];
             const formattedDeliveryDate = new Date(body.deliveryDate).toISOString().split('T')[0];
 
             response = await fetch(`${apiRoute}/${id}?isRoute=${isRoute}`, {
@@ -55,7 +54,6 @@ export async function PUT(req: Request, {params}: { params: { id: string } }) {
                 },
                 body: JSON.stringify({
                     ...body,
-                    orderDate: formattedOrderDate,
                     deliveryDate: formattedDeliveryDate,
                 }),
             });
