@@ -36,6 +36,11 @@ export function useInitiateDataTable(
     const direction = sorting.length > 0 && sorting[0].desc ? "desc" : initialDirection;
 
     const fetchData = async ({sortBy, direction, keyword, pagination, filterParams}: FetchDataParams) => {
+        const cleanedParams = Object.entries(filterParams).reduce((acc, [key, value]) => {
+            if (value !== "") acc[key] = value; // Buang nilai kosong
+            return acc;
+        }, {});
+
         try {
             const response = await axios.get(url, {
                 params: {
@@ -44,7 +49,7 @@ export function useInitiateDataTable(
                     sortBy: sortBy,
                     direction: direction,
                     keyword: keyword,
-                    ...filterParams
+                    ...cleanedParams
                 },
             });
 

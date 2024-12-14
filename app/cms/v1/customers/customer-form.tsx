@@ -79,7 +79,7 @@ export default function CustomerForm({formType = "create", id}: FormType) {
             name: "",
             phone: "",
             address: "",
-            location: "", // Assuming a default locations is set
+            location: "", // Assuming a default order-route is set
             daySubscribed: [""],
             isSubscribed: false,
             isActive: true,

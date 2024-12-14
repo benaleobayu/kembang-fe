@@ -1,16 +1,13 @@
 import { NextResponse } from 'next/server';
 import {getAuthToken} from "@/utils/intercept-token";
 import axios from "axios";
-import {routesUrl} from "@/components/apps/globals/options/routes";
 
-const apiServer = routesUrl.find(data => data.key === "orderServer")?.url;
-const apiRoute = `${process.env.API_URL}/${apiServer}`
 export async function GET(request: Request, {params}: { params: { id: string } }) {
     const token = getAuthToken(request);
     const {id} = params
     try {
         // Construct the API URL with dynamic query parameters
-        const apiUrl = `${apiRoute}/${id}`;
+        const apiUrl = `${process.env.API_URL}/ms/location/${id}`;
 
         const response = await fetch(apiUrl, {
             headers: {
@@ -37,40 +34,16 @@ export async function PUT(req: Request, {params}: { params: { id: string } }) {
     const token = getAuthToken(req);
     const {id} = params
     try {
-        const body = await req.json();
-        const url = new URL(req.url);
-        const isRoute = url.searchParams.get('isRoute') || false;
-
-        let response;
-        if (!isRoute){
-            const formattedDeliveryDate = new Date(body.deliveryDate).toISOString().split('T')[0];
-
-            response = await fetch(`${apiRoute}/${id}?isRoute=${isRoute}`, {
-                method: 'PUT',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    ...body,
-                    deliveryDate: formattedDeliveryDate,
-                }),
-            });
-        } else {
-            response = await fetch(`${apiRoute}/${id}?isRoute=${isRoute}`, {
-                method: 'PUT',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    ...body,
-                }),
-            });
-        }
-
+        const {name, province, orders, status} = await req.json();
+        const response = await fetch(`${process.env.API_URL}/ms/location/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({name, province, orders, status}),
+        });
 
         const data = await response.json();
         return NextResponse.json(data);
@@ -87,7 +60,7 @@ export async function DELETE(req: Request, {params}: { params: { id: string } })
     const token = getAuthToken(req);
     const {id} = params
     try {
-        const response = await fetch(`${apiRoute}/${id}`, {
+        const response = await fetch(`${process.env.API_URL}/ms/location/${id}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',

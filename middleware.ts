@@ -63,3 +63,4 @@ function clearSessionAndRedirect(loginUrl: URL) {
 export const config = {
     matcher: ['/cms/:path*'],
 };
+

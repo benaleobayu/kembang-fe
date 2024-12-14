@@ -18,10 +18,12 @@ export async function POST(req: NextRequest) {
         const data : any = await response.json();
 
         const token  = data.data.accessToken as string; // Adjust based on your actual response structure
+        const code  = data.data.restrict_code as string; // Adjust based on your actual response structure
 
         const responseJson : any = NextResponse.json(data);
 
         responseJson.cookies.set('accessToken', token)
+        responseJson.cookies.set('code', code)
 
         return responseJson;
     }catch (error) {

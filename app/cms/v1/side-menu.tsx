@@ -25,6 +25,7 @@ import {
     LuUsers
 } from "react-icons/lu";
 import __Mytooltips from "@/components/apps/globals/elements/mytooltips";
+import {routesUrl} from "@/components/apps/globals/options/routes";
 
 const iconMap = {
     LuBoxes: LuBoxes,
@@ -38,6 +39,8 @@ const iconMap = {
     LuUsers: LuUsers
 }
 
+const menuApi = routesUrl.find(data => data.key === "menuApi")?.url;
+
 export function SideMenu() {
     const [menus, setMenus] = useState([]); // Initialize state with useState
     const [mdResolution, setMdResolution] = useState(false);
@@ -45,7 +48,7 @@ export function SideMenu() {
     useEffect(() => {
         const fetchMenus = async () => {
             try {
-                const response = await axios.get('/api/util/menu'); // Make sure to include the leading slash
+                const response = await axios.get(menuApi); // Make sure to include the leading slash
                 setMenus(response.data.data);
             } catch (error) {
                 console.error(error);

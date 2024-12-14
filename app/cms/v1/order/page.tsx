@@ -1,31 +1,31 @@
-"use client"
-import * as React from 'react';
+"use client";
+import * as React from "react";
+import { useEffect, useState } from "react";
 import _HeaderTable from "@/components/apps/globals/elements/data-table/header-table";
 import { routesUrl } from "@/components/apps/globals/options/routes";
-import { _ReactDataTable } from "@/components/apps/globals/elements/data-table/react-data-table";
 import { OrderColumnTable } from "@/app/cms/v1/order/order-column-table";
-import OrderFormFilter from "@/app/cms/v1/order/order-form-filter";
-import { useEffect, useState } from "react";
-import {format} from "date-fns";
+import GlobalFormFilter from "@/components/apps/globals/elements/data-table/global-form-filter";
+import {_ReactDataTable} from "@/components/apps/globals/elements/data-table/react-data-table";
 
 type Props = {};
 
 export default function Page(props: Props) {
-    const apiRoute = routesUrl.find(data => data.key === "orderApi")?.url;
-    const urlRoute = routesUrl.find(data => data.key === "order")?.url;
+    const apiRoute = routesUrl.find((data) => data.key === "orderApi")?.url;
+    const urlRoute = routesUrl.find((data) => data.key === "order")?.url;
+
     const [newRoute, setNewRoute] = useState(apiRoute);
     const [filterParams, setFilterParams] = useState<{ [key: string]: string }>({});
     const [defaultValues, setDefaultValues] = useState({
         date: "",
         location: "",
-        route: 0
+        route: 0,
     });
 
     // Update URL dynamically based on filterParams
     useEffect(() => {
         if (apiRoute) {
             const queryParams = new URLSearchParams(filterParams).toString();
-            setNewRoute(queryParams ? `${apiRoute}?${queryParams}` : apiRoute);
+            setNewRoute(`${apiRoute}?${queryParams}`);
         }
     }, [filterParams, apiRoute]);
 
@@ -34,19 +34,21 @@ export default function Page(props: Props) {
         setDefaultValues({
             date: "",
             location: "",
-            route: 0
+            route: 0,
         });
         setFilterParams({});
     };
 
     return (
         <div>
-            Page Order
             <_HeaderTable resetForm={resetForm} isCreate createLink={`${urlRoute}/create`} />
-            <OrderFormFilter
+            <GlobalFormFilter
                 setFilterParams={setFilterParams}
-                defaultValues={defaultValues} // Pass default values to form
-                resetForm={resetForm} // Pass reset function to form
+                defaultValues={defaultValues}
+                resetForm={resetForm}
+                isDate
+                isLocation
+                isRoute
             />
             <_ReactDataTable
                 apiRoute={newRoute}

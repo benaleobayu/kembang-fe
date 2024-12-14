@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuthToken } from '@/utils/intercept-token';
 import { routesUrl } from '@/components/apps/globals/options/routes';
 
-const apiServer = routesUrl.find((data) => data.key === `orderServer`)?.url;
+const folderName = __dirname.split('/').pop();
+const apiServer = routesUrl.find(data => data.key === `${folderName}Server`)?.url;
 const apiRoute = `${process.env.API_URL}/${apiServer}`;
+console.log("this apiServer is : " + apiServer)
 
 export async function POST(req: NextRequest) {
     const token = getAuthToken(req);
@@ -11,7 +13,7 @@ export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
 
-        const formattedDeliveryDate = new Date(body.deliveryDate).toISOString().split('T')[0];
+        const formattedDate = new Date(body.date).toISOString().split('T')[0];
 
         const response = await fetch(apiRoute, {
             method: 'POST',
@@ -22,7 +24,7 @@ export async function POST(req: NextRequest) {
             },
             body: JSON.stringify({
                 ...body,
-                deliveryDate: formattedDeliveryDate,
+                date: formattedDate,
             }),
         });
 

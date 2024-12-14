@@ -37,7 +37,7 @@ const data = [
                 id: 4,
                 name: 'Route',
                 icon: 'LuMap',
-                link: '/cms/v1/routes'
+                link: '/cms/v1/order-route'
             },
         ]
     },
@@ -55,7 +55,7 @@ const data = [
                 id: 2,
                 name: 'Locations',
                 icon: 'LuMapPin',
-                link: '/cms/v1/ms/locations'
+                link: '/cms/v1/ms/order-route'
             },
             {
                 id: 3,

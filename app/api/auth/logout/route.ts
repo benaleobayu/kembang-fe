@@ -32,6 +32,7 @@ export async function GET(req: NextRequest) {
         // Jika logout berhasil, hapus cookie accessToken dan arahkan ke login
         const res = NextResponse.redirect('/cms/auth/login');
         res.cookies.set('accessToken', '', { maxAge: 0, path: '/' }); // Hapus cookie accessToken
+        res.cookies.set('code', ''); // Hapus cookie code
         return res;
 
     } catch (error) {
