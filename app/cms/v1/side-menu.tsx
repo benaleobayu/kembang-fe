@@ -17,7 +17,7 @@ import { toast } from "sonner";
 import {
     LuBoxes,
     LuFlagTriangleRight,
-    LuIndent,
+    LuIndentIncrease,
     LuLayoutDashboard, LuLock,
     LuMap,
     LuMapPin,
@@ -30,7 +30,7 @@ import {routesUrl} from "@/components/apps/globals/options/routes";
 const iconMap = {
     LuBoxes: LuBoxes,
     LuFlagTriangleRight: LuFlagTriangleRight,
-    LuIndent: LuIndent,
+    LuIndentIncrease: LuIndentIncrease,
     LuLayoutDashboard: LuLayoutDashboard,
     LuLock: LuLock,
     LuMap: LuMap,

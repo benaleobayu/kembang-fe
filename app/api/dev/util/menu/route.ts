@@ -30,7 +30,7 @@ const data = [
             {
                 id: 3,
                 name: 'Orders',
-                icon: 'LuIndent',
+                icon: 'LuIndentIncrease',
                 link: '/cms/v1/order'
             },
             {
