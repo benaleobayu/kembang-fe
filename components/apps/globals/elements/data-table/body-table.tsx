@@ -5,6 +5,7 @@ import {Button} from "@/components/ui/button";
 import {ChevronDown} from "lucide-react";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {ColumnDef, flexRender} from "@tanstack/react-table";
+import _FormKeyword from "@/components/apps/globals/elements/data-table/form-keyword";
 
 type Props = {
     columnTable: ColumnDef<any>[],
@@ -32,12 +33,7 @@ export default function _BodyTable(props: Props) {
     return (
         <div className="w-full">
             <div className="flex items-center py-4">
-                <Input
-                    placeholder="Filter by keyword..."
-                    value={keyword}
-                    onChange={(event) => setKeyword(event.target.value)} // Update keyword on every keyup
-                    className="max-w-sm"
-                />
+                <_FormKeyword keyword={keyword} setKeyword={setKeyword}/>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" className="ml-auto">

@@ -24,8 +24,13 @@ export default function Page(props: Props) {
     // Update URL dynamically based on filterParams
     useEffect(() => {
         if (apiRoute) {
-            const queryParams = new URLSearchParams(filterParams).toString();
-            setNewRoute(`${apiRoute}?${queryParams}`);
+            // Buat parameter unik dari `filterParams`
+            const uniqueParams = new URLSearchParams(filterParams);
+
+            console.log("Unique Params:", uniqueParams.toString()); // Debugging
+
+            // Tetapkan URL baru hanya jika ada parameter
+            setNewRoute(uniqueParams.toString() ? `${apiRoute}?${uniqueParams}` : apiRoute);
         }
     }, [filterParams, apiRoute]);
 

@@ -62,25 +62,32 @@ export default function GlobalFormFilter<T>({
         fetchData();
     }, []);
 
-    const onSubmit = (formData: z.infer<typeof FormSchema>) => {
+    const onSubmit = async (formData: z.infer<typeof FormSchema>) => {
         setFilterParams((prevParams) => {
-            const newParams: { [key: string]: string } = {};
+            const newParams: { [key: string]: string } = { ...prevParams };
 
+            // Tambahkan parameter valid saja
             if (formData.date) {
                 const parsedDate = new Date(formData.date);
                 newParams.date = isNaN(parsedDate.getTime()) ? "" : format(parsedDate, "yyyy-MM-dd");
+            } else {
+                delete newParams.date; // Hapus parameter jika kosong
             }
 
             if (formData.location) {
                 newParams.location = formData.location;
+            } else {
+                delete newParams.location; // Hapus parameter jika kosong
             }
 
             if (formData.route) {
                 newParams.route = formData.route.toString();
+            } else {
+                delete newParams.route; // Hapus parameter jika kosong
             }
 
-            // Gabungkan dengan parameter lama tanpa duplikasi
-            return { ...prevParams, ...newParams };
+            console.log("Updated Filter Params:", newParams); // Debugging
+            return newParams; // Tidak mempertahankan parameter lama yang tidak valid
         });
     };
 

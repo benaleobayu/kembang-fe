@@ -2,6 +2,7 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {toast} from "sonner";
+import qs from "qs";
 
 interface PaginationState {
     currentPage: number;
@@ -35,30 +36,37 @@ export function useInitiateDataTable(
     const sortBy = sorting.length > 0 ? sorting[0].id : initialSortBy;
     const direction = sorting.length > 0 && sorting[0].desc ? "desc" : initialDirection;
 
-    const fetchData = async ({sortBy, direction, keyword, pagination, filterParams}: FetchDataParams) => {
-        const cleanedParams = Object.entries(filterParams).reduce((acc, [key, value]) => {
-            if (value !== "") acc[key] = value; // Buang nilai kosong
-            return acc;
-        }, {});
+    const fetchData = async ({ sortBy, direction, keyword, pagination, filterParams }: FetchDataParams) => {
+        const cleanedParams = Object.fromEntries(
+            Object.entries(filterParams).filter(([_, value]) => value) // Hanya masukkan nilai valid
+        );
+
+        const finalParams = {
+            pages: pagination.currentPage,
+            limit: pagination.perPage,
+            sortBy,
+            direction,
+            keyword: keyword || '', // Buang jika kosong
+            ...cleanedParams,
+        };
 
         try {
             const response = await axios.get(url, {
-                params: {
-                    pages: pagination.currentPage,
-                    limit: pagination.perPage,
-                    sortBy: sortBy,
-                    direction: direction,
-                    keyword: keyword,
-                    ...cleanedParams
+                params: finalParams,
+                paramsSerializer: (params) => {
+                    const searchParams = new URLSearchParams(params);
+                    // Hapus parameter duplikat
+                    return Array.from(searchParams.entries())
+                        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+                        .join("&");
                 },
             });
 
             const data = response.data.data;
 
             if (url.includes("/order")) {
-                // Transform data here
                 const transformedData = data.result.map((item: any) => ({
-                    ...item, // Salin semua properti lainnya
+                    ...item,
                     dataPerson: {
                         name: item.customerName ?? "Unknown Name",
                         forwardName: item.forwardName ?? "Unknown Name",
